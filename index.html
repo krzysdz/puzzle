@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Puzzle matematyczne</title>
+		<link rel="stylesheet" type="text/css" href="style.css">
+	</head>
+	<body>
+		<!-- All of the Node.js APIs are available in this renderer process. -->
+		<!-- Title bar -->
+		<div id="title-bar">
+			<div class="resize-handle top"></div>
+			<div class="resize-handle left"></div>
+			<div id="icon">
+				<svg aria-hidden="true" viewBox="0 0 535.5 535.5"><path d="M471.75,255H433.5V153c0-28.05-22.95-51-51-51h-102V63.75C280.5,28.05,252.45,0,216.75,0S153,28.05,153,63.75V102H51    c-28.05,0-51,22.95-51,51v96.9h38.25c38.25,0,68.85,30.6,68.85,68.85S76.5,387.6,38.25,387.6H0v96.9c0,28.05,22.95,51,51,51h96.9    v-38.25c0-38.25,30.6-68.85,68.85-68.85s68.85,30.6,68.85,68.85v38.25h96.9c28.05,0,51-22.95,51-51v-102h38.25    c35.7,0,63.75-28.05,63.75-63.75S507.45,255,471.75,255z"/></svg>
+			</div>
+			<div id="title">Puzzle matematyczne</div>
+			<div id="title-bar-btns">
+				<button id="min-btn">
+					<svg aria-hidden="true" version="1.1" width="10" height="10"><path d="M 0,5 10,5 10,6 0,6 Z"></path></svg>
+				</button>
+				<button id="max-btn">
+					<svg aria-hidden="true" version="1.1" width="10" height="10"><path d="M 0,0 0,10 10,10 10,0 Z M 1,1 9,1 9,9 1,9 Z"></path></svg>
+				</button>
+				<button id="close-btn">
+					<svg aria-hidden="true" version="1.1" width="10" height="10"><path d="M 0,0 0,0.7 4.3,5 0,9.3 0,10 0.7,10 5,5.7 9.3,10 10,10 10,9.3 5.7,5 10,0.7 10,0 9.3,0 5,4.3 0.7,0 Z"></path></svg>
+				</button>
+			</div>
+		</div>
+		<!-- Navigation menu -->
+		<div class="menu-holder" id="top-menu">
+			<div id="menu-creator" class="menu-active">Przygotuj planszę</div>
+			<div id="menu-play">Graj</div>
+			<div id="menu-about">O aplikacji</div>
+		</div>
+		<!-- content -->
+		<div class="content-wrapper">
+			<div id="creator-container" class="container">
+				<button id="fileBTN">Kliknij aby wybrać plik</button>
+				<div id="pattern"><svg ></svg></div>
+				<div id="image"><svg ></svg></div>
+			</div>
+			<div id="play-container" class="container hidden"></div>
+			<div id="about-contaier" class="container hidden">
+				<h1>O aplikacji</h1>
+				<h2>Aplikacja Puzzle Edukacyjne</h2>
+
+				Wersja Node.js: <script>document.write(process.versions.node)</script><br>
+				Chromium: <script>document.write(process.versions.chrome)</script><br>
+				Electron: <script>document.write(process.versions.electron)</script><br>
+				
+				Ikony:<br>
+				Icons made by <a href="https://www.flaticon.com/authors/google" title="Google" target="_window">Google</a> from <a href="https://www.flaticon.com/" title="Flaticon" target="_window">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_window">CC 3.0 BY</a>
+			</div>
+		</div>
+		<script>
+			require('./renderer.js');
+			require('./script.js')
+		</script>
+	</body>
+</html>

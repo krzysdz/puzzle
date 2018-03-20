@@ -1,0 +1,54 @@
+{
+  "name": "szkola-puzzle",
+  "version": "0.1.0",
+  "description": "Puzzle dla p. Cwołek",
+  "main": "main.js",
+  "scripts": {
+    "start": "npm install && electron ./app",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "pack": "build --dir",
+    "dist": "build --x64 --ia32"
+  },
+  "build": {
+    "appId": "pl.dziembala-mazur.szkola-puzzle",
+    "productName": "Puzzle edukacyjne",
+    "dmg": {
+      "contents": [
+        {
+          "x": 110,
+          "y": 150
+        },
+        {
+          "x": 240,
+          "y": 150,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ]
+    },
+    "win": {
+      "target": "NSIS",
+      "icon": "build/icon.ico"
+    }
+  },
+  "keywords": [
+    "puzzle",
+    "szkoła",
+    "zagadka",
+    "obrazki",
+    "rysowanie"
+  ],
+  "author": "krzysdz",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^2.0.0-beta.4",
+    "electron-builder": "^20.6.2",
+    "electron-winstaller": "^2.6.4"
+  }
+}
