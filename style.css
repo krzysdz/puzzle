@@ -135,3 +135,27 @@ body {
 	background-position: center;
 	margin: auto;
 }
+.btn{
+    position: relative;
+    display: inline-block;
+    padding: 6px 12px;
+    font-size: 13px;
+    font-weight: bold;
+    line-height: 20px;
+    color: #333;
+    white-space: nowrap;
+    vertical-align: middle;
+    cursor: pointer;
+    -moz-user-select: none;
+    background-color: #EEE;
+    background-image: linear-gradient(#FCFCFC, #EEE);
+    border: 1px solid #D5D5D5;
+    border-radius: 3px;
+}
+.btn:hover{
+    text-decoration: none;
+background-color: #ddd;
+background-image: -webkit-linear-gradient(#eee, #ddd);
+background-image: linear-gradient(#eee, #ddd);
+border-color: #ccc
+}
