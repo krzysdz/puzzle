@@ -2,9 +2,19 @@
   "name": "szkola-puzzle",
   "version": "0.1.0",
   "description": "Puzzle dla p. Cwołek",
+  "author": {
+    "name": "krzysdz",
+    "url": "https://github.com/krzysdz"
+  },
+  "contributors": [
+    {
+      "name": "Szarp",
+      "url": "https://github.com/Szarp"
+    }
+  ],
   "main": "main.js",
   "scripts": {
-    "start": "npm install && electron ./app",
+    "start": "npm install && electron ./",
     "test": "echo \"Error: no test specified\" && exit 1",
     "pack": "build --dir",
     "dist": "build --x64 --ia32"
@@ -44,7 +54,13 @@
     "obrazki",
     "rysowanie"
   ],
-  "author": "krzysdz",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/krzysdz/puzzle.git"
+  },
+  "bugs": {
+    "url": "https://github.com/krzysdz/puzzle/issues"
+  },
   "license": "MIT",
   "devDependencies": {
     "electron": "^2.0.0-beta.4",

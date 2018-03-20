@@ -36,12 +36,6 @@ const {BrowserWindow} = remote;
 })();
 var imgHolder = document.getElementById("image");
 function selectFile() {
-	var img = new Image();
-	img.onload = function() {
-		//width defined as 100vw - 20px in styleshhet
-		imgHolder.style.width = document.body.clientWidth - 20 + "px";
-		imgHolder.style.height = "calc((100vw - 20px) * " + this.height/this.width + ")";
-	};
 	var bg = dialog.showOpenDialog({
 		title: "Wybierz zdjęcie",
 		buttonLabel: "Wybierz",
@@ -51,6 +45,13 @@ function selectFile() {
 		properties: ["openFile"]
 	});
 	if (bg != undefined){
+		var img = new Image();
+		img.onload = function() {
+			let elWidth = Math.floor((document.body.clientWidth - 20) / 10) * 10; //set image width to body - 2*10px margin, rounded down to 10
+			let elHeight = Math.round(elWidth * this.height/this.width / 10) * 10; //height - elWidth * proportions of image, rounded to the nearest 10
+			imgHolder.style.width = elWidth + "px";
+			imgHolder.style.height = elHeight + "px";
+		};
 		img.src = "file://" + bg[0];
 		bg[0] = escape(bg[0].replace(/[\\]/g, "/"));
 		imgHolder.style.backgroundImage = "url(file://" + bg[0] + ")";
