@@ -2,6 +2,7 @@
 // be executed in the renderer process for that window.
 // All of the Node.js APIs are available in this process.
 const remote = require("electron").remote;
+const gameScr = require("./game");
 const {dialog} = remote;
 const {BrowserWindow} = remote;
 /**
@@ -51,6 +52,7 @@ function selectFile() {
 			let elHeight = Math.round(elWidth * this.height/this.width / 10) * 10; //height - elWidth * proportions of image, rounded to the nearest 10
 			imgHolder.style.width = elWidth + "px";
 			imgHolder.style.height = elHeight + "px";
+			gameScr.on(elWidth, elHeight);
 		};
 		img.src = "file://" + bg[0];
 		bg[0] = escape(bg[0].replace(/[\\]/g, "/"));
@@ -70,6 +72,7 @@ function changeTab(event){
 		"menu-play": "play-container",
 		"menu-about": "about-contaier"
 	};
+	if(event.target.id == "menu-play") gameScr.startGame();
 	var containers = document.getElementsByClassName("container");
 	if (!event.target.classList.contains("menu-active")){
 		for(let a = 0; a < document.getElementById("top-menu").childElementCount; a++){

@@ -1,6 +1,6 @@
 {
   "name": "szkola-puzzle",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Puzzle dla p. Cwołek",
   "author": {
     "name": "krzysdz",
@@ -63,8 +63,8 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "electron": "^2.0.0-beta.4",
-    "electron-builder": "^20.6.2",
+    "electron": "^2.0.0-beta.6",
+    "electron-builder": "^20.8.2",
     "electron-winstaller": "^2.6.4"
   }
 }
