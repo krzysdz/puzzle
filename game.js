@@ -35,8 +35,6 @@ function addSVGArea(svgElem){
 	while(createImage.firstChild){
 		createImage.removeChild(createImage.firstChild);
 	}
-	/*let nSVGElem = svgElem.cloneNode(true);
-	playImage.appendChild(svgElem);*/
 	createImage.appendChild(svgElem);
 }
 
@@ -187,35 +185,34 @@ function fillSelected(borders){
 		id: elId,
 		color: colour
 	};
-	legend.lastNum++;
+	let modified = 0;
 	for(let a = borders[3]; a <= borders[1]; a+=dimensions){
 		for(let b = borders[0]; b <= borders[2]; b+=dimensions){
 			/** @type {SVGRectElement} */
 			let oneSquare = createImage.querySelector("rect[x=\"" + a + "\"][y=\"" + b + "\"");
-			/** @type {SVGRectElement} */
-			//let gameSquare = playImage.querySelector("rect[x=\"" + a + "\"][y=\"" + b + "\"");
+			let title = document.createElementNS("http://www.w3.org/2000/svg", "title");
+			title.appendChild(document.createTextNode(elId));
 			if(oneSquare && oneSquare.classList.contains("a")){
 				oneSquare.setAttribute("fill", colour);
 				oneSquare.setAttribute("title", elId);
 				oneSquare.classList.remove("a");
 				oneSquare.classList.add("b");
-				/*if(gameSquare instanceof SVGElement){
-					gameSquare.setAttribute("fill", colour);
-					gameSquare.setAttribute("title", elId);
-					gameSquare.classList.remove("a");
-					gameSquare.classList.add("b");
-				}*/
+				oneSquare.appendChild(title.cloneNode(true));
+				modified++;
 			}
 		}
 	}
-	var listElem = document.createElement("li");
-	var span = document.createElement("span");
-	span.style = "background-color: " + colour + "; color: " + getContrastYIQ(colour);
-	var txt = document.createTextNode("Element nr " + elId);
-	span.appendChild(txt);
-	listElem.appendChild(span);
-	listElem.setAttribute("name", elId);
-	document.getElementById("legend").appendChild(listElem);
+	if(modified){
+		legend.lastNum++;
+		var listElem = document.createElement("li");
+		var span = document.createElement("span");
+		span.style = "background-color: " + colour + "; color: " + getContrastYIQ(colour);
+		var txt = document.createTextNode("Element nr " + elId);
+		span.appendChild(txt);
+		listElem.appendChild(span);
+		listElem.setAttribute("name", elId);
+		document.getElementById("legend").appendChild(listElem);
+	}
 }
 
 function preparePattern(){
@@ -247,11 +244,13 @@ function removeElem(event){
 		title = elem.getAttribute("title");
 	else if(elem instanceof HTMLSpanElement)
 		title = elem.parentElement.getAttribute("name");
+	else if(elem instanceof SVGSVGElement)
+		return false; //clicked on already removed square - just return
 	else
 		throw new Error("Unknown element clicked: " + event + "\n" + event.target);
 	let elements = playImage.querySelectorAll("rect[title=\"" + title + "\"]");
 	for(let a = 0; a < elements.length; a++){
-		elements[a].setAttribute("fill", "transparent");
+		elements[a].remove();
 	}
 	document.getElementsByName(title)[0].remove();
 }
@@ -263,6 +262,10 @@ function removeElem(event){
  */
 function reset(width, height){
 	addSVGArea(appendEmptySquares(createSVGArea(width, height), width, height));
+	let legend = document.getElementById("legend");
+	while(legend.firstChild){
+		legend.removeChild(legend.firstChild);
+	}
 }
 
 function launch(){

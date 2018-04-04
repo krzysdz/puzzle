@@ -132,6 +132,9 @@ body {
 	overflow-x: hidden;
 	overflow-y: auto;
 }
+#creator-container, #play-container {
+	user-select: none;
+}
 #fileBTN {
 	user-select: none;
 	outline: none;
@@ -143,7 +146,6 @@ body {
 	background-position: center;
 	margin: auto;
 	margin-bottom: 3px;
-	margin-left: 0px
 }
 #pattern {
 	margin-bottom: 10px;

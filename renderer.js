@@ -48,8 +48,16 @@ function selectFile() {
 	if (bg != undefined){
 		var img = new Image();
 		img.onload = function() {
-			let elWidth = Math.floor((document.body.clientWidth - 20) / 10) * 10; //set image width to body - 2*10px margin, rounded down to 10
-			let elHeight = Math.round(elWidth * this.height/this.width / 10) * 10; //height - elWidth * proportions of image, rounded to the nearest 10
+			let elHeight, elWidth;
+			if(this.width >= Math.floor((document.body.clientWidth - 20) / 10) * 10){ // if image isn't too small
+				elWidth = Math.floor((document.body.clientWidth - 20) / 10) * 10; //set image width to body - 2*10px margin, rounded down to 10
+				elHeight = Math.round(elWidth * this.height/this.width / 10) * 10; //height - elWidth * proportions of image, rounded to the nearest 10
+				imgHolder.style.marginLeft = 0;
+			} else {
+				elWidth = Math.round(this.width / 10) * 10;
+				elHeight = Math.round(this.height / 10) * 10;
+				imgHolder.style.marginLeft = "auto";
+			}
 			imgHolder.style.width = elWidth + "px";
 			imgHolder.style.height = elHeight + "px";
 			gameScr.on(elWidth, elHeight);
