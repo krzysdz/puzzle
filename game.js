@@ -9,6 +9,7 @@ var legend = {
 	lastNum: 0,
 	elements: []
 };
+var gameReady = 0;
 
 /**
  * Creates and returns HTML `svg` tag with proper viewBox set
@@ -94,6 +95,9 @@ function resetColour(){
 		markedSquares[a].classList.add("a");
 		markedSquares[a].classList.remove("b");
 		markedSquares[a].setAttribute("fill", "transparent");
+		while(markedSquares[a].firstChild){ //remove title elements when clearing
+			markedSquares[a].removeChild(markedSquares[a].firstChild);
+		}
 	}
 	legend = {
 		lastNum: 0,
@@ -212,6 +216,7 @@ function fillSelected(borders){
 		listElem.appendChild(span);
 		listElem.setAttribute("name", elId);
 		document.getElementById("legend").appendChild(listElem);
+		gameReady = 1;
 	}
 }
 
@@ -227,12 +232,14 @@ function preparePattern(){
 }
 
 function prepareGame(){
+	if(!gameReady) return true;
 	playImage.setAttribute("style", createImage.getAttribute("style"));
 	while(playImage.firstChild){
 		playImage.removeChild(playImage.firstChild);
 	}
 	let svgElem = createImage.firstChild;
 	playImage.appendChild(svgElem.cloneNode(true));
+	gameReady = 0;
 }
 
 function removeElem(event){
