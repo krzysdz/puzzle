@@ -28,6 +28,20 @@ const {BrowserWindow} = remote;
 			var window = BrowserWindow.getFocusedWindow();
 			window.close();
 		});
+		document.getElementById("fullscreen-btn").addEventListener("click", function () {
+			var window = BrowserWindow.getFocusedWindow();
+			var fullIco = document.getElementById("fullIco");
+			var noFullIco = document.getElementById("noFullIco");
+			if (!window.isFullScreen()){
+				window.setFullScreen(true);
+				fullIco.style.display = "none";
+				noFullIco.style.display = "";
+			} else {
+				window.setFullScreen(false);
+				fullIco.style.display = "";
+				noFullIco.style.display = "none";
+			}
+		});
 	}
 	document.onreadystatechange = function () {
 		if (document.readyState == "complete") {
