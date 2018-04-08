@@ -182,6 +182,16 @@ function imageEvent(){
 	fillSelected(borders);
 }
 
+function addElementNumber(borders, num, color){
+	let textElem = document.createElementNS("http://www.w3.org/2000/svg", "text");
+	textElem.setAttribute("x", borders[3] + (borders[1] - borders[3]) / 2);
+	textElem.setAttribute("y", borders[0] + (borders[2] - borders[0]) / 2 + 20);
+	textElem.setAttribute("fill", getContrastYIQ(color));
+	textElem.setAttribute("font-size", "30");
+	textElem.appendChild(document.createTextNode(num));
+	createImage.firstChild.appendChild(textElem);
+}
+
 function fillSelected(borders){
 	var colour = createColor();
 	var elId = legendObj.lastNum;
@@ -207,6 +217,7 @@ function fillSelected(borders){
 		}
 	}
 	if(modified){
+		addElementNumber(borders, elId, colour);
 		legendObj.lastNum++;
 		gameReady = 1;
 	}
