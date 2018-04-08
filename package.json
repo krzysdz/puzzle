@@ -17,7 +17,7 @@
     "start": "npm install && electron ./",
     "test": "echo \"Error: no test specified\" && exit 1",
     "pack": "build --dir",
-    "dist": "build --x64 --ia32"
+    "dist": "build -wl --x64 --ia32"
   },
   "build": {
     "appId": "pl.dziembala-mazur.szkola-puzzle",
@@ -64,7 +64,9 @@
   "license": "MIT",
   "devDependencies": {
     "electron": "^2.0.0-beta.7",
-    "electron-builder": "^20.8.2",
-    "electron-winstaller": "^2.6.4"
+    "electron-builder": "^20.8.2"
+  },
+  "dependencies": {
+    "electron-updater": "^2.21.8"
   }
 }

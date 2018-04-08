@@ -1,6 +1,7 @@
 const {app, BrowserWindow} = require("electron");
 const path = require("path");
 const url = require("url");
+const {autoUpdater} = require("electron-updater");
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -8,7 +9,7 @@ let win;
 
 function createWindow () {
 	// Create the browser window.
-	win = new BrowserWindow({width: 800, height: 600, frame: false, icon: path.join(__dirname, "build/icon.ico")});
+	win = new BrowserWindow({width: 800, height: 600, frame: false, icon: path.join(__dirname, "build", "icon.ico")});
 
 	// maximize the window
 	win.maximize();
@@ -20,8 +21,8 @@ function createWindow () {
 		slashes: true
 	}));
 
-	// Open the DevTools.
-	win.webContents.openDevTools();
+	// Check for updates and notify user if a new version is available
+	autoUpdater.checkForUpdatesAndNotify();
 
 	// Emitted when the window is closed.
 	win.on("closed", () => {
