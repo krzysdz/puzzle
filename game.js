@@ -5,7 +5,7 @@ var dimensions = 20;
 var playImage = document.getElementById("playImage");
 var patternArea = document.getElementById("pattern");
 var createImage = document.getElementById("image");
-var legend = {
+var legendObj = {
 	lastNum: 0,
 	elements: []
 };
@@ -99,7 +99,7 @@ function resetColour(){
 			markedSquares[a].removeChild(markedSquares[a].firstChild);
 		}
 	}
-	legend = {
+	legendObj = {
 		lastNum: 0,
 		elements: []
 	};
@@ -184,8 +184,8 @@ function imageEvent(){
 
 function fillSelected(borders){
 	var colour = createColor();
-	var elId = legend.lastNum;
-	legend.elements[elId] = {
+	var elId = legendObj.lastNum;
+	legendObj.elements[elId] = {
 		id: elId,
 		color: colour
 	};
@@ -207,15 +207,7 @@ function fillSelected(borders){
 		}
 	}
 	if(modified){
-		legend.lastNum++;
-		var listElem = document.createElement("li");
-		var span = document.createElement("span");
-		span.style = "background-color: " + colour + "; color: " + getContrastYIQ(colour);
-		var txt = document.createTextNode("Element nr " + elId);
-		span.appendChild(txt);
-		listElem.appendChild(span);
-		listElem.setAttribute("name", elId);
-		document.getElementById("legend").appendChild(listElem);
+		legendObj.lastNum++;
 		gameReady = 1;
 	}
 }
@@ -231,6 +223,23 @@ function preparePattern(){
 	patternArea.setAttribute("data-click-status", "0");
 }
 
+function createList(){
+	let list = document.getElementById("legend");
+	let {elements} = legendObj;
+	for(let a = 0; a < elements.length; a++){
+		let elId = elements[a].id;
+		let listElem = document.createElement("li");
+		let colour = elements[a].color;
+		let span = document.createElement("span");
+		span.style = "background-color: " + colour + "; color: " + getContrastYIQ(colour);
+		let txt = document.createTextNode("Element nr " + elId);
+		span.appendChild(txt);
+		listElem.appendChild(span);
+		listElem.setAttribute("name", elId);
+		list.appendChild(listElem);
+	}
+}
+
 function prepareGame(){
 	if(!gameReady) return true;
 	playImage.setAttribute("style", createImage.getAttribute("style"));
@@ -240,6 +249,7 @@ function prepareGame(){
 	let svgElem = createImage.firstChild;
 	playImage.appendChild(svgElem.cloneNode(true));
 	gameReady = 0;
+	createList();
 }
 
 function removeElem(event){
@@ -269,10 +279,14 @@ function removeElem(event){
  */
 function reset(width, height){
 	addSVGArea(appendEmptySquares(createSVGArea(width, height), width, height));
-	let legend = document.getElementById("legend");
-	while(legend.firstChild){
-		legend.removeChild(legend.firstChild);
+	let list = document.getElementById("legend");
+	while(list.firstChild){
+		list.removeChild(list.firstChild);
 	}
+	legendObj = {
+		lastNum: 0,
+		elements: []
+	};
 }
 
 function launch(){
