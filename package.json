@@ -1,10 +1,11 @@
 {
   "name": "szkola-puzzle",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Puzzle dla p. Cwołek",
   "author": {
     "name": "krzysdz",
-    "url": "https://github.com/krzysdz"
+    "url": "https://github.com/krzysdz",
+    "email": "contact@dziembala.pl"
   },
   "contributors": [
     {
@@ -17,7 +18,8 @@
     "start": "npm install && electron ./",
     "test": "echo \"Error: no test specified\" && exit 1",
     "pack": "build --dir",
-    "dist": "build -wl --x64 --ia32"
+    "dist": "build -wl --x64 --ia32",
+    "dist-mac": "build -m"
   },
   "build": {
     "appId": "pl.dziembala-mazur.szkola-puzzle",

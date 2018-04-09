@@ -180,6 +180,9 @@ body {
 .legend-div{
 	margin-top: 10px;
 }
+#appVer {
+	font-weight: 700;
+}
 /* width */
 ::-webkit-scrollbar {
 	width: 4px;

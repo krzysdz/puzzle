@@ -5,10 +5,15 @@ const remote = require("electron").remote;
 const gameScr = require("./game");
 const {dialog} = remote;
 const {BrowserWindow} = remote;
+const {app} = remote;
+
 /**
- * Add eventListeners to window state buttons (minimize, maximize, close)
+ * Run when app is loaded
  */
 (function () {
+	/**
+	 * Add eventListeners to window state buttons (minimize, maximize, close, fullscreen)
+	 */
 	function init() {
 		document.getElementById("min-btn").addEventListener("click", function () {
 			var window = BrowserWindow.getFocusedWindow();
@@ -46,6 +51,7 @@ const {BrowserWindow} = remote;
 	document.onreadystatechange = function () {
 		if (document.readyState == "complete") {
 			init();
+			showVersion();
 		}
 	};
 })();
@@ -113,4 +119,12 @@ function changeTab(event){
 }
 for(let a = 0; a < document.getElementById("top-menu").childElementCount; a++){
 	document.getElementById("top-menu").children[a].addEventListener("click", changeTab);
+}
+
+/**
+ * Display app version in "about" tab in `#appVer` span
+ */
+function showVersion(){
+	var appVersion = app.getVersion();
+	document.getElementById("appVer").appendChild(document.createTextNode(appVersion));
 }
