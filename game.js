@@ -89,6 +89,9 @@ function resetColour(){
 		filledSquares[0].setAttribute("fill", "transparent");
 		filledSquares[0].classList.add("a");
 		filledSquares[0].classList.remove("b");
+		while(filledSquares[0] && filledSquares[0].firstChild){ //remove title elements when clearing
+			filledSquares[0].removeChild(filledSquares[0].firstChild);
+		}
 	}
 	let markedSquares = createImage.querySelectorAll("rect[fill=\"purple\"]");
 	for(let a = 0; a < markedSquares.length; a++){
@@ -98,6 +101,10 @@ function resetColour(){
 		while(markedSquares[a].firstChild){ //remove title elements when clearing
 			markedSquares[a].removeChild(markedSquares[a].firstChild);
 		}
+	}
+	let numbers = createImage.querySelectorAll("text");
+	for(let a = 0; a < numbers.length; a++){
+		numbers[a].remove();
 	}
 	legendObj = {
 		lastNum: 0,
@@ -182,12 +189,13 @@ function imageEvent(){
 	fillSelected(borders);
 }
 
-function addElementNumber(borders, num, color){
+function addElementNumber([top, right, bottom, left], num, color){
 	let textElem = document.createElementNS("http://www.w3.org/2000/svg", "text");
-	textElem.setAttribute("x", borders[3] + (borders[1] - borders[3]) / 2);
-	textElem.setAttribute("y", borders[0] + (borders[2] - borders[0]) / 2 + 20);
+	textElem.setAttribute("x", left + (right - left) / 2);
+	textElem.setAttribute("y", top + (bottom - top) / 2 + 20);
 	textElem.setAttribute("fill", getContrastYIQ(color));
 	textElem.setAttribute("font-size", "30");
+	textElem.setAttribute("name", num);
 	textElem.appendChild(document.createTextNode(num));
 	createImage.firstChild.appendChild(textElem);
 }
@@ -236,6 +244,9 @@ function preparePattern(){
 
 function createList(){
 	let list = document.getElementById("legend");
+	while(list.firstChild){
+		list.removeChild(list.firstChild);
+	}
 	let {elements} = legendObj;
 	for(let a = 0; a < elements.length; a++){
 		let elId = elements[a].id;
@@ -266,7 +277,7 @@ function prepareGame(){
 function removeElem(event){
 	var elem = event.target;
 	let title;
-	if(elem instanceof HTMLLIElement)
+	if(elem instanceof HTMLLIElement || elem instanceof SVGTextElement)
 		title = elem.getAttribute("name");
 	else if(elem instanceof SVGRectElement)
 		title = elem.getAttribute("title");
@@ -280,7 +291,11 @@ function removeElem(event){
 	for(let a = 0; a < elements.length; a++){
 		elements[a].remove();
 	}
-	document.getElementsByName(title)[0].remove();
+	let otherElems = document.getElementsByName(title);
+	for(let a = otherElems.length - 1; a >= 0; a--){
+		if(otherElems[a].parentElement.parentElement != createImage)
+			otherElems[a].remove();
+	}
 }
 
 /**

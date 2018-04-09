@@ -1,6 +1,6 @@
 {
   "name": "szkola-puzzle",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Puzzle dla p. Cwołek",
   "author": {
     "name": "krzysdz",
@@ -19,7 +19,10 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "pack": "build --dir",
     "dist": "build -wl --x64 --ia32",
-    "dist-mac": "build -m"
+    "dist-mac": "build -m",
+    "gh-pub": "build --x64 --ia32 -p always",
+    "gh-pub-mac": "build -m -p always",
+    "gh-pub-wl": "build -wl --x64 --ia32 -p always"
   },
   "build": {
     "appId": "pl.dziembala-mazur.szkola-puzzle",
