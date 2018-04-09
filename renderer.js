@@ -21,6 +21,9 @@ const {app} = remote;
 		});
 		document.getElementById("max-btn").addEventListener("click", function () {
 			var window = BrowserWindow.getFocusedWindow();
+			if (window.isFullScreen()){
+				exitFullscreen();
+			}
 			if (!window.isMaximized()) {
 				window.maximize();
 				document.getElementById("max-btn").getElementsByTagName("path")[0].setAttribute("d", "m 2,1e-5 0,2 -2,0 0,8 8,0 0,-2 2,0 0,-8 z m 1,1 6,0 0,6 -1,0 0,-5 -5,0 z m -2,2 6,0 0,6 -6,0 z");
@@ -42,9 +45,7 @@ const {app} = remote;
 				fullIco.style.display = "none";
 				noFullIco.style.display = "";
 			} else {
-				window.setFullScreen(false);
-				fullIco.style.display = "";
-				noFullIco.style.display = "none";
+				exitFullscreen();
 			}
 		});
 	}
@@ -55,6 +56,14 @@ const {app} = remote;
 		}
 	};
 })();
+function exitFullscreen(){
+	var window = BrowserWindow.getFocusedWindow();
+	var fullIco = document.getElementById("fullIco");
+	var noFullIco = document.getElementById("noFullIco");
+	window.setFullScreen(false);
+	fullIco.style.display = "";
+	noFullIco.style.display = "none";
+}
 var imgHolder = document.getElementById("image");
 function selectFile() {
 	var bg = dialog.showOpenDialog({
