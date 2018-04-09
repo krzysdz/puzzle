@@ -92,7 +92,7 @@ function selectFile() {
 			gameScr.on(elWidth, elHeight);
 		};
 		img.src = "file://" + bg[0];
-		bg[0] = escape(bg[0].replace(/[\\]/g, "/"));
+		bg[0] = encodeURI(bg[0].replace(/\\/g, "/"));
 		imgHolder.style.backgroundImage = "url(file://" + bg[0] + ")";
 	} else {
 		alert("No file selected");
