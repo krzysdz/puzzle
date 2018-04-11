@@ -1,6 +1,6 @@
 {
   "name": "szkola-puzzle",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Puzzle dla p. Cwołek",
   "author": {
     "name": "krzysdz",
@@ -50,10 +50,16 @@
     },
     "linux": {
       "target": [
+        "AppImage",
         "deb",
         "rpm"
       ],
-      "category": "Game"
+      "category": "Game",
+      "packageCategory": "Game",
+      "icon": "build/icons",
+      "desktop": {
+        "Encoding": "UTF-8"
+      }
     },
     "win": {
       "target": "NSIS",
