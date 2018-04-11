@@ -8,8 +8,16 @@ const {autoUpdater} = require("electron-updater");
 let win;
 
 function createWindow () {
+	// Window icon should be .ico on windows and .png on other systems
+	let icon;
+	if (process.platform === "win32"){
+		icon = path.join(__dirname, "build", "icon.ico");
+	} else {
+		icon = path.join(__dirname, "build", "icon.png");
+	}
+
 	// Create the browser window.
-	win = new BrowserWindow({width: 800, height: 600, frame: false, icon: path.join(__dirname, "build", "icon.ico")});
+	win = new BrowserWindow({width: 800, height: 600, frame: false, icon: icon});
 
 	// maximize the window
 	win.maximize();

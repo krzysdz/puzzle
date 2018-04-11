@@ -27,6 +27,13 @@
   "build": {
     "appId": "pl.dziembala-mazur.szkola-puzzle",
     "productName": "Puzzle edukacyjne",
+    "files": [
+      "**/*",
+      "build/icon.*"
+    ],
+    "mac": {
+      "category": "public.app-category.educational-games"
+    },
     "dmg": {
       "contents": [
         {
@@ -45,7 +52,8 @@
       "target": [
         "deb",
         "rpm"
-      ]
+      ],
+      "category": "Game"
     },
     "win": {
       "target": "NSIS",
