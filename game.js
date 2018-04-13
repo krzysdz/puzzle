@@ -122,11 +122,10 @@ function fillPattern(){
 	let width = borders[1] - borders[3];
 	let height = borders[2] - borders[0];
 	let dim = getDimensions(createImage.firstChild);
-	let imgWidth = dim[0];
-	let imgHeight = dim[1];
+	let [imgWidth, imgHeight] = dim;
 	for(let x = 0; x < imgWidth; x += width + dimensions){
 		for(let y = 0; y < imgHeight; y += height + dimensions){
-			fillSelected([y, x + width, y + height, x]);
+			fillSelected([y, ((x + width) <= imgWidth) ? (x + width) : imgWidth, ((y + height) <= imgHeight) ? (y + height) : imgHeight, x]);
 		}
 	}
 }
@@ -189,15 +188,27 @@ function imageEvent(){
 	fillSelected(borders);
 }
 
+/**
+ * Calcultes and returns width and height of `<text>` element's content with applied font and font-size
+ * @param {SVGTextElement} textElement Text element (with set font and size) which dimensions will be calculated
+ * @returns {number[]} `[width, height]`
+ */
+function svgTextDimensions(textElement){
+	let bbox = textElement.getBBox();
+	return [bbox.width, bbox.height];
+}
+
 function addElementNumber([top, right, bottom, left], num, color){
 	let textElem = document.createElementNS("http://www.w3.org/2000/svg", "text");
-	textElem.setAttribute("x", left + (right - left) / 2);
-	textElem.setAttribute("y", top + (bottom - top) / 2 + 20);
 	textElem.setAttribute("fill", getContrastYIQ(color));
 	textElem.setAttribute("font-size", "30");
 	textElem.setAttribute("name", num);
 	textElem.appendChild(document.createTextNode(num));
 	createImage.firstChild.appendChild(textElem);
+	let [tWidth, tHeight] = svgTextDimensions(textElem);
+	let imgBottom = getDimensions(createImage.firstChild)[1];
+	textElem.setAttribute("x", left + (right - left + dimensions - tWidth) / 2);
+	textElem.setAttribute("y", ((top + (bottom - top + dimensions + tHeight / 2) / 2) <= imgBottom) ? (top + (bottom - top + dimensions + tHeight / 2) / 2) : imgBottom);
 }
 
 function fillSelected(borders){
