@@ -30,7 +30,7 @@ To build binaries for Linux (using remote build service on Windows) and Windows 
 ```bash
 npm run dist
 ```
-***Note:** to build `rpm` on MacOS you need to install rpm usin [brew](https://brew.sh/) (`brew install rpm`)*
+***Note:** to build `rpm` on MacOS you need to install rpm using [brew](https://brew.sh/) (`brew install rpm`)*
 
 #### MacOS
 This command will build binaries only for MacOS (zip + dmg)

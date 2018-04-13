@@ -56,6 +56,19 @@ const {app} = remote;
 		}
 	};
 })();
+/**
+ * Replaces Windows backslashes `\` with slashes `/`, uses encodeURI and then escapes remaining `!'()*` characters with their character code
+ * @param {string} str String to encode
+ * @returns {string} encoded string
+ */
+function fixedEncodeURI(str) {
+	return encodeURI(str.replace(/\\/g, "/")).replace(/[!'()*]/g, function(c) {
+		return "%" + c.charCodeAt(0).toString(16);
+	});
+}
+/**
+ * Exits fullscreen and sets proper icon
+ */
 function exitFullscreen(){
 	var window = BrowserWindow.getFocusedWindow();
 	var fullIco = document.getElementById("fullIco");
@@ -65,6 +78,9 @@ function exitFullscreen(){
 	noFullIco.style.display = "none";
 }
 var imgHolder = document.getElementById("image");
+/**
+ * Function executed on select file button - shows open file dialog, load file as background of `imgHolder` and sets its dimensions - rounded to 10 (check comments in code)
+ */
 function selectFile() {
 	var bg = dialog.showOpenDialog({
 		title: "Wybierz zdjęcie",
@@ -92,7 +108,7 @@ function selectFile() {
 			gameScr.on(elWidth, elHeight);
 		};
 		img.src = "file://" + bg[0];
-		bg[0] = encodeURI(bg[0].replace(/\\/g, "/"));
+		bg[0] = fixedEncodeURI(bg[0]);
 		imgHolder.style.backgroundImage = "url(file://" + bg[0] + ")";
 	} else {
 		alert("No file selected");
