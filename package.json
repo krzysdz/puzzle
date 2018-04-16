@@ -18,7 +18,8 @@
     "start": "npm install && electron ./",
     "test": "echo \"Error: no test specified\" && exit 1",
     "pack": "build --dir",
-    "dist": "build -wl --x64 --ia32",
+    "dist": "build --x64 --ia32",
+    "dist-wl": "build -wl --x64 --ia32",
     "dist-mac": "build -m",
     "dist-mwl": "build -mwl --x64 --ia32",
     "gh-pub": "build --x64 --ia32 -p always",
@@ -34,7 +35,21 @@
       "build/icon.*"
     ],
     "mac": {
-      "category": "public.app-category.educational-games"
+      "category": "public.app-category.educational-games",
+      "fileAssociations": [
+        {
+          "ext": "jpg",
+          "role": "Viewer"
+        },
+        {
+          "ext": "jpeg",
+          "role": "Viewer"
+        },
+        {
+          "ext": "png",
+          "role": "Viewer"
+        }
+      ]
     },
     "dmg": {
       "contents": [

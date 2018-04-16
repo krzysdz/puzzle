@@ -25,10 +25,16 @@ npm start
 ### Building binaries
 You can build binaries from source code. Binaries will be placed in `dist/` directory
 
+#### Current platform
+To build binaries for your current OS run:
+```bash
+npm run dist
+```
+
 #### Linux & Windows
 To build binaries for Linux (using remote build service on Windows) and Windows (using Wine on Linux)
 ```bash
-npm run dist
+npm run dist-wl
 ```
 ***Note:** to build `rpm` on MacOS you need to install rpm using [brew](https://brew.sh/) (`brew install rpm`)*
 
