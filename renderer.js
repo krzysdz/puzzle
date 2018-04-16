@@ -2,10 +2,16 @@
 // be executed in the renderer process for that window.
 // All of the Node.js APIs are available in this process.
 const remote = require("electron").remote;
+const fs = require("fs");
+const path = require("path");
 const gameScr = require("./game");
 const {dialog} = remote;
 const {BrowserWindow} = remote;
 const {app} = remote;
+/** @type {string[]} arguments passed from command line */
+const {argv} = remote.process;
+
+var imgHolder = document.getElementById("image");
 
 /**
  * Run when app is loaded
@@ -53,9 +59,50 @@ const {app} = remote;
 		if (document.readyState == "complete") {
 			init();
 			showVersion();
+			checkArgs();
 		}
 	};
 })();
+
+/**
+ * Returns true if file can be read/write or false if not
+ * @param {string} path path to file
+ */
+function fileExists(path){
+	try {
+		fs.accessSync(path, fs.constants.R_OK | fs.constants.W_OK);
+		return true;
+	} catch (err) {
+		return false;
+	}
+}
+
+/**
+ * Checks arguments passed to this electron process and loads file if specified as one of arguments.
+ * Should be run after init.
+ */
+function checkArgs(){
+	/**	@type {string[]} list of arguments passed from command line (or open file) */
+	let args;
+	if(argv[1] === "." || argv[1] === "./" || argv[1] === ".\\"){ // if run from CLI (`electron .` or `electron ./`)
+		args = argv.slice(2);
+	} else {
+		args = argv.slice(1);
+	}
+	if(args.length != 0){
+		for(let a = args.length - 1; a >= 0; a--){
+			if(!((args[a].toLowerCase().endsWith(".jpg") || args[a].toLowerCase().endsWith(".jpeg") || args[a].toLowerCase().endsWith(".png")) && fileExists(args[a]))){
+				args = args.splice[a];
+			}
+		}
+		if(args.length > 0){
+			if(args.length > 1)
+				alert("More than one file selected. Only the first one will be loaded: " + args.join("\n"));
+			loadFile(args);
+		}
+	}
+}
+
 /**
  * Replaces Windows backslashes `\` with slashes `/`, uses encodeURI and then escapes remaining `!'()*` characters with their character code
  * @param {string} str String to encode
@@ -66,6 +113,7 @@ function fixedEncodeURI(str) {
 		return "%" + c.charCodeAt(0).toString(16);
 	});
 }
+
 /**
  * Exits fullscreen and sets proper icon
  */
@@ -77,7 +125,7 @@ function exitFullscreen(){
 	fullIco.style.display = "";
 	noFullIco.style.display = "none";
 }
-var imgHolder = document.getElementById("image");
+
 /**
  * Function executed on select file button - shows open file dialog, load file as background of `imgHolder` and sets its dimensions - rounded to 10 (check comments in code)
  */
@@ -91,30 +139,42 @@ function selectFile() {
 		properties: ["openFile"]
 	});
 	if (bg != undefined){
-		var img = new Image();
-		img.onload = function() {
-			let elHeight, elWidth;
-			if(this.width >= Math.floor((document.body.clientWidth - 20) / 10) * 10){ // if image isn't too small
-				elWidth = Math.floor((document.body.clientWidth - 20) / 10) * 10; //set image width to body - 2*10px margin, rounded down to 10
-				elHeight = Math.round(elWidth * this.height/this.width / 10) * 10; //height - elWidth * proportions of image, rounded to the nearest 10
-				imgHolder.style.marginLeft = 0;
-			} else {
-				elWidth = Math.round(this.width / 10) * 10;
-				elHeight = Math.round(this.height / 10) * 10;
-				imgHolder.style.marginLeft = "auto";
-			}
-			imgHolder.style.width = elWidth + "px";
-			imgHolder.style.height = elHeight + "px";
-			gameScr.on(elWidth, elHeight);
-		};
-		img.src = "file://" + bg[0];
-		bg[0] = fixedEncodeURI(bg[0]);
-		imgHolder.style.backgroundImage = "url(file://" + bg[0] + ")";
+		loadFile(bg);
 	} else {
 		alert("No file selected");
 	}
 }
 document.getElementById("fileBTN").addEventListener("click", selectFile);
+
+/**
+ * Load image as background and set div's dimensions
+ * @param {string[]} paths array of strings with path to file (relative or absolute), only the first element is used
+ */
+function loadFile([bg]){
+	if(!path.isAbsolute(bg)) // if path is relative prepend it with current (base) path
+		bg = path.join(__dirname, bg);
+	var img = new Image();
+	img.onload = function () {
+		let elHeight, elWidth;
+		if (this.width >= Math.floor((document.body.clientWidth - 20) / 10) * 10) { // if image isn't too small
+			elWidth = Math.floor((document.body.clientWidth - 20) / 10) * 10; //set image width to body - 2*10px margin, rounded down to 10
+			elHeight = Math.round(elWidth * this.height / this.width / 10) * 10; //height - elWidth * proportions of image, rounded to the nearest 10
+			imgHolder.style.marginLeft = 0;
+		}
+		else {
+			elWidth = Math.round(this.width / 10) * 10;
+			elHeight = Math.round(this.height / 10) * 10;
+			imgHolder.style.marginLeft = "auto";
+		}
+		imgHolder.style.width = elWidth + "px";
+		imgHolder.style.height = elHeight + "px";
+		gameScr.on(elWidth, elHeight);
+	};
+	img.src = "file://" + bg;
+	bg = fixedEncodeURI(bg);
+	imgHolder.style.backgroundImage = "url(file://" + bg + ")";
+}
+
 /**
  * Change tab to one pointed by event
  * @param {MouseEvent} event received event
