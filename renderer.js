@@ -12,6 +12,7 @@ const {app} = remote;
 const {argv} = remote.process;
 
 var imgHolder = document.getElementById("image");
+var dropZone = document.getElementById("droparea");
 
 /**
  * Run when app is loaded
@@ -174,6 +175,61 @@ function loadFile([bg]){
 	bg = fixedEncodeURI(bg);
 	imgHolder.style.backgroundImage = "url(file://" + bg + ")";
 }
+
+/**
+ * Show the copy icon when dragging over. Shows dropzone
+ * @param {DragEvent} e
+ */
+function fileDragOver(e){
+	e.stopPropagation();
+	e.preventDefault();
+	e.dataTransfer.dropEffect = "copy";
+	dropZone.style.display = "block";
+}
+document.getElementById("creator-container").addEventListener("dragenter", fileDragOver);
+dropZone.addEventListener("dragenter", fileDragOver);
+dropZone.addEventListener("dragover", fileDragOver);
+
+/**
+ * Hides (`display: none`) dropzone
+ * @param {DragEvent} e
+ */
+function fileDragLeave(e){
+	e.stopPropagation();
+	e.preventDefault();
+	dropZone.style.display = "none";
+}
+dropZone.addEventListener("dragleave", fileDragLeave);
+dropZone.addEventListener("dragend", fileDragLeave);
+
+/**
+ * Loads (first) dropped file
+ * @param {DragEvent} e event fired on file drop
+ */
+function dropHandler(e){
+	e.stopPropagation();
+	e.preventDefault();
+	var files = e.dataTransfer.files; // Array of all files
+	let anyFile = false;
+	for(let a = 0; a < files.length; a++){
+		if((files[a].path.toLowerCase().endsWith(".jpg") || files[a].path.toLowerCase().endsWith(".jpeg") || files[a].path.toLowerCase().endsWith(".png")) && fileExists(files[a].path)){
+			if(files.length > 1)
+				alert("Wybrano wiele plików. Załadowany zostanie pierwszy z nich");
+			files = files[a];
+			anyFile = true;
+			break;
+		}
+	}
+	if(!anyFile)
+		files = [];
+	if(files.length == 0){
+		alert("Upewnij się, że plik ma rozszerzenie .jpg, .jpeg lub .png");
+	} else {
+		loadFile([files.path]);
+	}
+	dropZone.style.display = "none";
+}
+dropZone.addEventListener("drop", dropHandler);
 
 /**
  * Change tab to one pointed by event
