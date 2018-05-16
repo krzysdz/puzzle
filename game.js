@@ -5,9 +5,17 @@ var dimensions = 20;
 var playImage = document.getElementById("playImage");
 var patternArea = document.getElementById("pattern");
 var createImage = document.getElementById("image");
+
+/**
+ * Object containig details of current image and tiles displayed on it.
+ * Used to generate a legend (list of tlies left on image) and to save/restore pattern.
+ * @type {Legend}
+ */
 var legendObj = {
 	lastNum: 0,
-	elements: []
+	elements: [],
+	dimensions: [],
+	filePath: ""
 };
 var gameReady = 0;
 
@@ -39,6 +47,11 @@ function addSVGArea(svgElem){
 	createImage.appendChild(svgElem);
 }
 
+/**
+ * Returns dimensions of given SVG element using it's viewBox parameter
+ * @param {SVGSVGElement} elem SVG element which dimensions will be calculated
+ * @returns {number[]} calculated `[width, height]`
+ */
 function getDimensions(elem){
 	let width, height;
 	if(elem.hasAttribute("viewBox")){
@@ -52,7 +65,7 @@ function getDimensions(elem){
 	} else {
 		throw new Error("width or height were not passed to function and viewBox attribute is absent");
 	}
-	return [width, height];
+	return [parseInt(width), parseInt(height)];
 }
 
 /**
@@ -108,7 +121,9 @@ function resetColour(){
 	}
 	legendObj = {
 		lastNum: 0,
-		elements: []
+		elements: [],
+		filePath: "",
+		dimensions: []
 	};
 	let list = document.getElementById("legend");
 	while(list.firstChild){
@@ -211,12 +226,21 @@ function addElementNumber([top, right, bottom, left], num, color){
 	textElem.setAttribute("y", ((top + (bottom - top + dimensions + tHeight / 2) / 2) <= imgBottom) ? (top + (bottom - top + dimensions + tHeight / 2) / 2) : imgBottom);
 }
 
-function fillSelected(borders){
-	var colour = createColor();
-	var elId = legendObj.lastNum;
+/**
+ * Fills empty fields within borders with random colour and adds details about it to `Legend` object
+ * @param {number[]} borders borders of a rectangle that will be drawn `[top, right, bottom, left]`
+ * @param {string} [colour] HEX colour of rectangle which will be created (random, unless specified)
+ * @param {number} [elId] rectangle's ID (number). Unless specified, it will be `legendObj.lastNum`.
+ */
+function fillSelected(borders, colour, elId){
+	if(!colour)
+		colour = createColor();
+	if(!elId)
+		elId = legendObj.lastNum;
 	legendObj.elements[elId] = {
 		id: elId,
-		color: colour
+		color: colour,
+		borders: borders
 	};
 	let modified = 0;
 	for(let a = borders[3]; a <= borders[1]; a+=dimensions){
@@ -285,6 +309,10 @@ function prepareGame(){
 	createList();
 }
 
+/**
+ * Removes element, it's number and it's legend entry after double click
+ * @param {MouseEvent} event Double click mouse event
+ */
 function removeElem(event){
 	var elem = event.target;
 	let title;
@@ -313,8 +341,9 @@ function removeElem(event){
  * Adds SVG elements with "empty" squares to image containers. Should be run on image change
  * @param {number} width width of image
  * @param {number} height height of image
+ * @param {string} path path to loaded file
  */
-function reset(width, height){
+function reset(width, height, path){
 	addSVGArea(appendEmptySquares(createSVGArea(width, height), width, height));
 	let list = document.getElementById("legend");
 	while(list.firstChild){
@@ -322,10 +351,29 @@ function reset(width, height){
 	}
 	legendObj = {
 		lastNum: 0,
-		elements: []
+		elements: [],
+		dimensions: [width, height],
+		filePath: path
 	};
 }
 
+/**
+ * Fills
+ * @param {Legend} legend `Legend` object read form `.wzp` file
+ */
+function fillFromFile(legend){
+	if(getDimensions(createImage.firstChild)[0] != legend.dimensions[0] || getDimensions(createImage.firstChild)[1] != legend.dimensions[1]){
+		alert("Wymiary obrazka i wzoru są niezgodne", "Błąd!");
+		throw new Error("Dimensions of SVG element inside `createImage` are different than specified in `.wzp` file");
+	}
+	for(let n = 0; n < legend.elements.length; n++){
+		fillSelected(legend.elements[n].borders, legend.elements[n].color, legend.elements[n].id);
+	}
+}
+
+/**
+ * Adds all necessary event listeners to document
+ */
 function launch(){
 	dimensions = 20;
 	playImage = document.getElementById("playImage");
@@ -354,5 +402,28 @@ function launch(){
 	document.getElementById("legend").addEventListener("dblclick", removeElem);
 }
 
+function exportLegend(){
+	//return JSON.stringify(legendObj);
+	return legendObj;
+}
+
 module.exports.on = reset;
 module.exports.startGame = prepareGame;
+module.exports.legend = exportLegend;
+module.exports.loadLegend = fillFromFile;
+
+/**
+ * @typedef {Object} Tile
+ * @property {number} id Element ID - big number displayed on it
+ * @property {string} color HEX colour code (`#rrggbb`)
+ * @property {number[]} borders array containing tile borders in format `[top, right, bottom, left]`
+ */
+
+/**
+ * Object storing image details and and tiles properties
+ * @typedef {Object} Legend
+ * @property {number} lastNum number of elements
+ * @property {string} [filePath] path to image (optional)
+ * @property {number[]} dimensions contains `[width, height]` of displayed image (not real dimensions of image)
+ * @property {Tile[]} elements array of Tile elements to draw on the iimage
+ */

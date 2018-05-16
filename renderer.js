@@ -92,13 +92,13 @@ function checkArgs(){
 	}
 	if(args.length != 0){
 		for(let a = args.length - 1; a >= 0; a--){
-			if(!((args[a].toLowerCase().endsWith(".jpg") || args[a].toLowerCase().endsWith(".jpeg") || args[a].toLowerCase().endsWith(".png")) && fileExists(args[a]))){
+			if(!((path.extname(args[a].toLowerCase()) === ".jpg" || path.extname(args[a].toLowerCase()) === ".jpeg" || path.extname(args[a].toLowerCase()) === ".png" || path.extname(args[a].toLowerCase) === ".bmp" || path.extname(args[a].toLowerCase()) === ".wzp") && fileExists(args[a]))){
 				args = args.splice[a];
 			}
 		}
 		if(args.length > 0){
 			if(args.length > 1)
-				alert("More than one file selected. Only the first one will be loaded: " + args.join("\n"));
+				alert("More than one file selected. Only the first one will be loaded: " + args.join("\n"), "Warning!");
 			loadFile(args);
 		}
 	}
@@ -109,7 +109,7 @@ function checkArgs(){
  * @param {string} str String to encode
  * @returns {string} encoded string
  */
-function fixedEncodeURI(str) {
+function fixedEncodeURI(str){
 	return encodeURI(str.replace(/\\/g, "/")).replace(/[!'()*]/g, function(c) {
 		return "%" + c.charCodeAt(0).toString(16);
 	});
@@ -135,14 +135,17 @@ function selectFile() {
 		title: "Wybierz zdjęcie",
 		buttonLabel: "Wybierz",
 		filters: [
-			{name: "Obrazy", extensions: ["jpg", "jpeg", "png"]}
+			{name: "Obsługiwane pliki", extensions: ["jpg", "jpeg", "png", "bmp", "wzp"]},
+			{name: "Obrazy", extensions: ["jpg", "jpeg", "png", "bmp"]},
+			{name: "Wzór", extensions: ["wzp"]}
 		],
 		properties: ["openFile"]
 	});
 	if (bg != undefined){
 		loadFile(bg);
 	} else {
-		alert("No file selected");
+		dialog.showErrorBox("Błąd!", "Nie wybrano pliku!");
+		//alert("No file selected", "Błąd");
 	}
 }
 document.getElementById("fileBTN").addEventListener("click", selectFile);
@@ -150,10 +153,39 @@ document.getElementById("fileBTN").addEventListener("click", selectFile);
 /**
  * Load image as background and set div's dimensions
  * @param {string[]} paths array of strings with path to file (relative or absolute), only the first element is used
+ * @param {boolean} [URIencoded=false] whether file path is already URI encoded
+ * @param {Function} [callback] callback to execute, cbarg passed as an argument
+ * @param {*} [cbarg] parameter to pass to callback
  */
-function loadFile([bg]){
+function loadFile([bg], URIencoded = false, callback, cbarg){
 	if(!path.isAbsolute(bg)) // if path is relative prepend it with current (base) path
 		bg = path.join(__dirname, bg);
+	if(path.extname(bg) === ".wzp"){
+		fs.readFile(bg, "utf-8", (err, data) => {
+			if(err){
+				dialog.showErrorBox("Błąd odczytu wzoru", "Nie udało odczytać się pliku. Komunikat błędu:\n" + err);
+				return;
+			}
+			/** @type {Legend} */
+			let legend;
+			try {
+				legend = JSON.parse(data);
+				if(!(legend.dimensions && legend.elements && legend.lastNum)){
+					throw new Error("Plik nie zawiera niezbędnych danych.");
+				}
+			} catch (error) {
+				dialog.showErrorBox("Błąd odczytu wzoru", "Nie udało odczytać się pliku - prawdopodobnie jest on uszkodzony. Komunikat błędu:\n" + error);
+				return;
+			}
+			if(legend.filePath){ // if file path is specified in `.wzp` load image from it (and don't encode it twice)
+				loadFile([legend.filePath], true, gameScr.loadLegend, legend);
+			} else { // if no file specified - just load pattern, ./game.js checks whether current image has proper dimensions
+				gameScr.loadLegend(legend);
+			}
+		});
+		// abort further loading of file so not to load background twice
+		return;
+	}
 	var img = new Image();
 	img.onload = function () {
 		let elHeight, elWidth;
@@ -169,12 +201,47 @@ function loadFile([bg]){
 		}
 		imgHolder.style.width = elWidth + "px";
 		imgHolder.style.height = elHeight + "px";
-		gameScr.on(elWidth, elHeight);
+		gameScr.on(elWidth, elHeight, bg);
+		if(callback){
+			setImmediate(() => {
+				callback(cbarg);
+			});
+		}
 	};
 	img.src = "file://" + bg;
-	bg = fixedEncodeURI(bg);
+	if(!URIencoded)
+		bg = fixedEncodeURI(bg);
 	imgHolder.style.backgroundImage = "url(file://" + bg + ")";
 }
+
+/**
+ * Shows save dialog and saves `legend` to selected file with .wzp extension
+ * @param {MouseEvent} e
+ */
+function savePattern(e){
+	/** @type {Legend} */
+	let legend = gameScr.legend();
+	if(e.target.id === "savePatternOnly"){
+		delete legend.filePath;
+	}
+	legend = JSON.stringify(legend);
+	dialog.showSaveDialog({
+		title: "Zapisz wzór",
+		filters: [
+			{name: "Wzór", extensions: ["wzp"]}
+		]
+	}, saveFile => {
+		fs.writeFile(saveFile, legend, "utf-8", err => {
+			if(err){
+				dialog.showErrorBox("Błąd zapisu", "Nie udało zapisać się wzoru. Komunkiat błędu:\n" + err);
+			} else {
+				alert("Wzór zapisany do pliku: " + saveFile, "Zapisano");
+			}
+		});
+	});
+}
+document.getElementById("savePattern").addEventListener("click", savePattern);
+document.getElementById("savePatternOnly").addEventListener("click", savePattern);
 
 /**
  * Show the copy icon when dragging over. Shows dropzone
@@ -214,7 +281,7 @@ function dropHandler(e){
 	for(let a = 0; a < files.length; a++){
 		if((files[a].path.toLowerCase().endsWith(".jpg") || files[a].path.toLowerCase().endsWith(".jpeg") || files[a].path.toLowerCase().endsWith(".png")) && fileExists(files[a].path)){
 			if(files.length > 1)
-				alert("Wybrano wiele plików. Załadowany zostanie pierwszy z nich");
+				alert("Wybrano wiele plików. Załadowany zostanie pierwszy z nich", "Uwaga!");
 			files = files[a];
 			anyFile = true;
 			break;
@@ -223,7 +290,7 @@ function dropHandler(e){
 	if(!anyFile)
 		files = [];
 	if(files.length == 0){
-		alert("Upewnij się, że plik ma rozszerzenie .jpg, .jpeg lub .png");
+		alert("Upewnij się, że plik ma rozszerzenie .jpg, .jpeg lub .png", "Nie można otworzyć pliku");
 	} else {
 		loadFile([files.path]);
 	}
@@ -269,3 +336,20 @@ function showVersion(){
 	var appVersion = app.getVersion();
 	document.getElementById("appVer").appendChild(document.createTextNode(appVersion));
 }
+
+
+/**
+ * @typedef {Object} Tile
+ * @property {number} id Element ID - big number displayed on it
+ * @property {string} color HEX colour code (`#rrggbb`)
+ * @property {number[]} borders array containing tile borders in format `[top, right, bottom, left]`
+ */
+
+/**
+ * Object storing image details and and tiles properties
+ * @typedef {Object} Legend
+ * @property {number} lastNum number of elements
+ * @property {string} [filePath] path to image (optional)
+ * @property {number[]} dimensions contains `[width, height]` of displayed image (not real dimensions of image)
+ * @property {Tile[]} elements array of Tile elements to draw on the iimage
+ */

@@ -1,6 +1,6 @@
 {
   "name": "szkola-puzzle",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Puzzle dla p. Cwołek",
   "author": {
     "name": "krzysdz",
@@ -48,6 +48,14 @@
         {
           "ext": "png",
           "role": "Viewer"
+        },
+        {
+          "ext": "bmp",
+          "role": "Viewer"
+        },
+        {
+          "ext": "wzp",
+          "role": "Editor"
         }
       ]
     },
@@ -99,11 +107,11 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "electron": "^2.0.0",
+    "electron": "^2.0.1",
     "electron-builder": "^20.13.5",
     "eslint": "^4.19.1"
   },
   "dependencies": {
-    "electron-updater": "^2.21.8"
+    "electron-updater": "^2.21.10"
   }
 }
