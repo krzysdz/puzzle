@@ -358,10 +358,14 @@ function reset(width, height, path){
 }
 
 /**
- * Fills
+ * Fills the image with pasttern read form `legend` object
  * @param {Legend} legend `Legend` object read form `.wzp` file
  */
 function fillFromFile(legend){
+	if(createImage.style.backgroundImage == ""){
+		alert("Ten plik wzoru nie zawiera obrazu i żaden obraz nie jest załadowany. Proszę załadować obraz.", "Błąd");
+		throw new Error("Loading pattern without any image!");
+	}
 	if(getDimensions(createImage.firstChild)[0] != legend.dimensions[0] || getDimensions(createImage.firstChild)[1] != legend.dimensions[1]){
 		alert("Wymiary obrazka i wzoru są niezgodne", "Błąd!");
 		throw new Error("Dimensions of SVG element inside `createImage` are different than specified in `.wzp` file");

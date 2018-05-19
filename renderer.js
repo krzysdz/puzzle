@@ -92,8 +92,8 @@ function checkArgs(){
 	}
 	if(args.length != 0){
 		for(let a = args.length - 1; a >= 0; a--){
-			if(!((path.extname(args[a].toLowerCase()) === ".jpg" || path.extname(args[a].toLowerCase()) === ".jpeg" || path.extname(args[a].toLowerCase()) === ".png" || path.extname(args[a].toLowerCase) === ".bmp" || path.extname(args[a].toLowerCase()) === ".wzp") && fileExists(args[a]))){
-				args = args.splice[a];
+			if(!((path.extname(args[a].toLowerCase()) === ".jpg" || path.extname(args[a].toLowerCase()) === ".jpeg" || path.extname(args[a].toLowerCase()) === ".png" || path.extname(args[a].toLowerCase()) === ".bmp" || path.extname(args[a].toLowerCase()) === ".wzp") && fileExists(args[a]))){
+				args.splice(a, 1);
 			}
 		}
 		if(args.length > 0){
