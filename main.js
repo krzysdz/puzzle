@@ -3,6 +3,10 @@ const path = require("path");
 const url = require("url");
 const {autoUpdater} = require("electron-updater");
 
+// AppUserModelId has to be set to appId (from build in package.json) in order to
+// display notifications on Windows 10 and 8/8.1 used eg. by autoUpdater.
+app.setAppUserModelId("pl.dziembala-mazur.szkola-puzzle");
+
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let win;
