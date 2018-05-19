@@ -20,11 +20,8 @@ function createWindow () {
 		icon = path.join(__dirname, "build", "icon.png");
 	}
 
-	// Create the browser window.
-	win = new BrowserWindow({width: 800, height: 600, frame: false, icon: icon});
-
-	// maximize the window
-	win.maximize();
+	// Create the browser window. (hidden)
+	win = new BrowserWindow({width: 800, height: 600, frame: false, icon: icon, show: false});
 
 	// and load the index.html of the app.
 	win.loadURL(url.format({
@@ -32,6 +29,14 @@ function createWindow () {
 		protocol: "file:",
 		slashes: true
 	}));
+
+	// when the index.html is loaded
+	win.webContents.once("dom-ready", () => {
+		// display the window to users
+		win.show();
+		// and maximize it
+		win.maximize();
+	});
 
 	// Check for updates and notify user if a new version is available
 	autoUpdater.checkForUpdatesAndNotify();
