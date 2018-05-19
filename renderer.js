@@ -10,6 +10,7 @@ const {BrowserWindow} = remote;
 const {app} = remote;
 /** @type {string[]} arguments passed from command line */
 const {argv} = remote.process;
+const supportedFileTypes = [".png", ".jpg", ".jpeg", ".bmp", ".wzp"];
 
 var imgHolder = document.getElementById("image");
 var dropZone = document.getElementById("droparea");
@@ -92,7 +93,7 @@ function checkArgs(){
 	}
 	if(args.length != 0){
 		for(let a = args.length - 1; a >= 0; a--){
-			if(!((path.extname(args[a].toLowerCase()) === ".jpg" || path.extname(args[a].toLowerCase()) === ".jpeg" || path.extname(args[a].toLowerCase()) === ".png" || path.extname(args[a].toLowerCase()) === ".bmp" || path.extname(args[a].toLowerCase()) === ".wzp") && fileExists(args[a]))){
+			if(!((supportedFileTypes.includes(path.extname(args[a]).toLowerCase())) && fileExists(args[a]))){
 				args.splice(a, 1);
 			}
 		}
@@ -294,7 +295,7 @@ function dropHandler(e){
 	var files = e.dataTransfer.files; // Array of all files
 	let anyFile = false;
 	for(let a = 0; a < files.length; a++){
-		if((files[a].path.toLowerCase().endsWith(".jpg") || files[a].path.toLowerCase().endsWith(".jpeg") || files[a].path.toLowerCase().endsWith(".png")) && fileExists(files[a].path)){
+		if(supportedFileTypes.includes(path.extname(files[a].path).toLowerCase())){
 			if(files.length > 1)
 				alert("Wybrano wiele plików. Załadowany zostanie pierwszy z nich", "Uwaga!");
 			files = files[a];
@@ -305,7 +306,7 @@ function dropHandler(e){
 	if(!anyFile)
 		files = [];
 	if(files.length == 0){
-		alert("Upewnij się, że plik ma rozszerzenie .jpg, .jpeg lub .png", "Nie można otworzyć pliku");
+		alert("Upewnij się, że plik ma rozszerzenie .jpg, .jpeg, .png, .bmp lub .wzp", "Nie można otworzyć pliku");
 	} else {
 		loadFile([files.path]);
 	}
