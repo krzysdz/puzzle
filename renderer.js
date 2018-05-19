@@ -244,6 +244,21 @@ document.getElementById("savePattern").addEventListener("click", savePattern);
 document.getElementById("savePatternOnly").addEventListener("click", savePattern);
 
 /**
+ * Prevent opening loading image if dropped outside `dropZone`
+ * @param {DragEvent} e
+ */
+function preventDrop(e){
+	e.stopPropagation();
+	e.preventDefault();
+	e.dataTransfer.dropEffect = "none";
+}
+document.body.addEventListener("dragenter", preventDrop);
+document.body.addEventListener("dragover", preventDrop);
+document.body.addEventListener("dragleave", preventDrop);
+document.body.addEventListener("dragend", preventDrop);
+document.body.addEventListener("drop", preventDrop);
+
+/**
  * Show the copy icon when dragging over. Shows dropzone
  * @param {DragEvent} e
  */
