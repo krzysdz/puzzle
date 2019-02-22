@@ -1,3 +1,5 @@
 dist
 node_modules
 publish_gh*
+.DS_Store
+*/.DS_Store

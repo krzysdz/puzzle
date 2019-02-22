@@ -7,8 +7,18 @@ const {autoUpdater} = require("electron-updater");
 // display notifications on Windows 10 and 8/8.1 used eg. by autoUpdater.
 app.setAppUserModelId("pl.dziembala-mazur.szkola-puzzle");
 
-// Keep a global reference of the window object, if you don't, the window will
-// be closed automatically when the JavaScript object is garbage collected.
+// If the window doesn't exist yet add the filename to argv
+function firstOpenListener(e, p) {
+	e.preventDefault();
+	process.argv.push(p);
+}
+app.on("open-file", firstOpenListener);
+
+/**
+ * Keep a global reference of the window object, if you don't, the window will
+ * be closed automatically when the JavaScript object is garbage collected.
+ * @type {Electron.BrowserWindow}
+ */
 let win;
 
 function createWindow () {
@@ -48,12 +58,30 @@ function createWindow () {
 		// when you should delete the corresponding element.
 		win = null;
 	});
+
+	// Remove all open file event listeners
+	app.removeAllListeners("open-file");
+	// Now the window exists, so message can be sent to the renderer
+	app.on("open-file", (e, p) => {
+		e.preventDefault();
+		win.webContents.send("openFile", p);
+	});
 }
 
-app.on("open-file", (e, p) => {
+/**
+ * Listen to open-file events while all windows are closed on macOS
+ * @param {Electron.Event} e "open-file" event
+ * @param {string} p path to file
+ */
+function windowClosedOpenFile(e, p){
 	e.preventDefault();
-	process.argv.push(p);
-});
+	if(process.argv[1] === "." || process.argv[1] === "./" || process.argv[1] === ".\\"){ // if run from CLI (`electron .` or `electron ./`)
+		process.argv[2] = p;
+	} else {
+		process.argv[1] = p;
+	}
+	createWindow();
+}
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -66,6 +94,10 @@ app.on("window-all-closed", () => {
 	// to stay active until the user quits explicitly with Cmd + Q
 	if (process.platform !== "darwin") {
 		app.quit();
+	} else {
+		// If on macOS remove open-file event listeners
+		app.removeAllListeners("open-file");
+		app.addListener("open-file", windowClosedOpenFile);
 	}
 });
 

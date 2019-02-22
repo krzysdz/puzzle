@@ -1,7 +1,7 @@
 // This file is required by the index.html file and will
 // be executed in the renderer process for that window.
 // All of the Node.js APIs are available in this process.
-const remote = require("electron").remote;
+const {remote, ipcRenderer} = require("electron");
 const fs = require("fs");
 const path = require("path");
 const gameScr = require("./game");
@@ -353,6 +353,13 @@ function showVersion(){
 	document.getElementById("appVer").appendChild(document.createTextNode(appVersion));
 }
 
+// Listen to openFile messages from main
+ipcRenderer.on("openFile", (_event, filePath) => {
+	// Check if the file has supported extension
+	if (supportedFileTypes.includes(path.extname(filePath).toLowerCase())) {
+		loadFile([filePath]);
+	}
+});
 
 /**
  * @typedef {Object} Tile
