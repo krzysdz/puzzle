@@ -76,8 +76,10 @@ function createWindow () {
 function windowClosedOpenFile(e, p){
 	e.preventDefault();
 	if(process.argv[1] === "." || process.argv[1] === "./" || process.argv[1] === ".\\"){ // if run from CLI (`electron .` or `electron ./`)
+		process.argv.splice(2);
 		process.argv[2] = p;
 	} else {
+		process.argv.splice(1);
 		process.argv[1] = p;
 	}
 	createWindow();
