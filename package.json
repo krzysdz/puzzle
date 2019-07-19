@@ -17,15 +17,15 @@
   "scripts": {
     "start": "npm install && electron ./",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "pack": "build --dir",
-    "dist": "build --x64 --ia32",
-    "dist-wl": "build -wl --x64 --ia32",
-    "dist-mac": "build -m",
-    "dist-mwl": "build -mwl --x64 --ia32",
-    "gh-pub": "build --x64 --ia32 -p always",
-    "gh-pub-mac": "build -m -p always",
-    "gh-pub-wl": "build -wl --x64 --ia32 -p always",
-    "gh-pub-mwl": "build -mwl --x64 --ia32 -p always"
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder --x64 --ia32",
+    "dist-wl": "electron-builder -wl --x64 --ia32",
+    "dist-mac": "electron-builder -m",
+    "dist-mwl": "electron-builder -mwl --x64 --ia32",
+    "gh-pub": "electron-builder --x64 --ia32 -p always",
+    "gh-pub-mac": "electron-builder -m -p always",
+    "gh-pub-wl": "electron-builder -wl --x64 --ia32 -p always",
+    "gh-pub-mwl": "electron-builder -mwl --x64 --ia32 -p always"
   },
   "build": {
     "appId": "pl.dziembala-mazur.szkola-puzzle",
@@ -107,11 +107,11 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "electron": "^5.0.2",
-    "electron-builder": "^20.43.0",
-    "eslint": "^5.16.0"
+    "electron": "^5.0.7",
+    "electron-builder": "^21.1.1",
+    "eslint": "^6.0.1"
   },
   "dependencies": {
-    "electron-updater": "^4.0.12"
+    "electron-updater": "^4.1.2"
   }
 }
