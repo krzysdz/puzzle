@@ -1,15 +1,15 @@
 // This file is required by the index.html file and will
 // be executed in the renderer process for that window.
 // All of the Node.js APIs are available in this process.
-const {remote, ipcRenderer} = require("electron");
+const { remote, ipcRenderer } = require("electron");
 const fs = require("fs");
 const path = require("path");
 const gameScr = require("./game");
-const {dialog} = remote;
-const {BrowserWindow} = remote;
-const {app} = remote;
+const { dialog } = remote;
+const { BrowserWindow } = remote;
+const { app } = remote;
 /** @type {string[]} arguments passed from command line */
-const {argv} = remote.process;
+const { argv } = remote.process;
 const supportedFileTypes = [".png", ".jpg", ".jpeg", ".bmp", ".wzp"];
 
 var imgHolder = document.getElementById("image");
@@ -29,7 +29,7 @@ var dropZone = document.getElementById("droparea");
 		});
 		document.getElementById("max-btn").addEventListener("click", function () {
 			var window = BrowserWindow.getFocusedWindow();
-			if (window.isFullScreen()){
+			if (window.isFullScreen()) {
 				exitFullscreen();
 			}
 			if (!window.isMaximized()) {
@@ -48,7 +48,7 @@ var dropZone = document.getElementById("droparea");
 			var window = BrowserWindow.getFocusedWindow();
 			var fullIco = document.getElementById("fullIco");
 			var noFullIco = document.getElementById("noFullIco");
-			if (!window.isFullScreen()){
+			if (!window.isFullScreen()) {
 				window.setFullScreen(true);
 				fullIco.style.display = "none";
 				noFullIco.style.display = "";
@@ -70,7 +70,7 @@ var dropZone = document.getElementById("droparea");
  * Returns true if file can be read/write or false if not
  * @param {string} path path to file
  */
-function fileExists(path){
+function fileExists(path) {
 	try {
 		fs.accessSync(path, fs.constants.R_OK | fs.constants.W_OK);
 		return true;
@@ -83,22 +83,22 @@ function fileExists(path){
  * Checks arguments passed to this electron process and loads file if specified as one of arguments.
  * Should be run after init.
  */
-function checkArgs(){
+function checkArgs() {
 	/**	@type {string[]} list of arguments passed from command line (or open file) */
 	let args;
-	if(argv[1] === "." || argv[1] === "./" || argv[1] === ".\\"){ // if run from CLI (`electron .` or `electron ./`)
+	if (argv[1] === "." || argv[1] === "./" || argv[1] === ".\\") { // if run from CLI (`electron .` or `electron ./`)
 		args = argv.slice(2);
 	} else {
 		args = argv.slice(1);
 	}
-	if(args.length != 0){
-		for(let a = args.length - 1; a >= 0; a--){
-			if(!((supportedFileTypes.includes(path.extname(args[a]).toLowerCase())) && fileExists(args[a]))){
+	if (args.length != 0) {
+		for (let a = args.length - 1; a >= 0; a--) {
+			if (!((supportedFileTypes.includes(path.extname(args[a]).toLowerCase())) && fileExists(args[a]))) {
 				args.splice(a, 1);
 			}
 		}
-		if(args.length > 0){
-			if(args.length > 1)
+		if (args.length > 0) {
+			if (args.length > 1)
 				alert("More than one file selected. Only the first one will be loaded: " + args.join("\n"), "Warning!");
 			loadFile(args);
 		}
@@ -110,8 +110,8 @@ function checkArgs(){
  * @param {string} str String to encode
  * @returns {string} encoded string
  */
-function fixedEncodeURI(str){
-	return encodeURI(str.replace(/\\/g, "/")).replace(/[!'()*]/g, function(c) {
+function fixedEncodeURI(str) {
+	return encodeURI(str.replace(/\\/g, "/")).replace(/[!'()*]/g, function (c) {
 		return "%" + c.charCodeAt(0).toString(16);
 	});
 }
@@ -119,7 +119,7 @@ function fixedEncodeURI(str){
 /**
  * Exits fullscreen and sets proper icon
  */
-function exitFullscreen(){
+function exitFullscreen() {
 	var window = BrowserWindow.getFocusedWindow();
 	var fullIco = document.getElementById("fullIco");
 	var noFullIco = document.getElementById("noFullIco");
@@ -132,22 +132,24 @@ function exitFullscreen(){
  * Function executed on select file button - shows open file dialog, load file as background of `imgHolder` and sets its dimensions - rounded to 10 (check comments in code)
  */
 function selectFile() {
-	var bg = dialog.showOpenDialog({
+	dialog.showOpenDialog({
 		title: "Wybierz zdjęcie",
 		buttonLabel: "Wybierz",
 		filters: [
-			{name: "Obsługiwane pliki", extensions: ["jpg", "jpeg", "png", "bmp", "wzp"]},
-			{name: "Obrazy", extensions: ["jpg", "jpeg", "png", "bmp"]},
-			{name: "Wzór", extensions: ["wzp"]}
+			{ name: "Obsługiwane pliki", extensions: ["jpg", "jpeg", "png", "bmp", "wzp"] },
+			{ name: "Obrazy", extensions: ["jpg", "jpeg", "png", "bmp"] },
+			{ name: "Wzór", extensions: ["wzp"] }
 		],
 		properties: ["openFile"]
+	}).then(optionDialog => {
+		if (optionDialog.canceled) return;
+		if (optionDialog.filePaths != undefined) {
+			loadFile(optionDialog.filePaths);
+		} else {
+			dialog.showErrorBox("Błąd!", "Nie wybrano pliku!");
+			//alert("No file selected", "Błąd");
+		}
 	});
-	if (bg != undefined){
-		loadFile(bg);
-	} else {
-		dialog.showErrorBox("Błąd!", "Nie wybrano pliku!");
-		//alert("No file selected", "Błąd");
-	}
 }
 document.getElementById("fileBTN").addEventListener("click", selectFile);
 
@@ -158,12 +160,12 @@ document.getElementById("fileBTN").addEventListener("click", selectFile);
  * @param {Function} [callback] callback to execute, cbarg passed as an argument
  * @param {*} [cbarg] parameter to pass to callback
  */
-function loadFile([bg], URIencoded = false, callback, cbarg){
-	if(!path.isAbsolute(bg)) // if path is relative prepend it with current (base) path
+function loadFile([bg], URIencoded = false, callback, cbarg) {
+	if (!path.isAbsolute(bg)) // if path is relative prepend it with current (base) path
 		bg = path.join(__dirname, bg);
-	if(path.extname(bg) === ".wzp"){
+	if (path.extname(bg) === ".wzp") {
 		fs.readFile(bg, "utf-8", (err, data) => {
-			if(err){
+			if (err) {
 				dialog.showErrorBox("Błąd odczytu wzoru", "Nie udało odczytać się pliku. Komunikat błędu:\n" + err);
 				return;
 			}
@@ -171,17 +173,21 @@ function loadFile([bg], URIencoded = false, callback, cbarg){
 			let legend;
 			try {
 				legend = JSON.parse(data);
-				if(!(legend.dimensions && legend.elements && legend.lastNum)){
+				if (!(legend.dimensions && legend.elements && legend.lastNum)) {
 					throw new Error("Plik nie zawiera niezbędnych danych.");
 				}
 			} catch (error) {
 				dialog.showErrorBox("Błąd odczytu wzoru", "Nie udało odczytać się pliku - prawdopodobnie jest on uszkodzony. Komunikat błędu:\n" + error);
 				return;
 			}
-			if(legend.filePath){ // if file path is specified in `.wzp` load image from it (and don't encode it twice)
-				loadFile([legend.filePath], true, gameScr.loadLegend, legend);
-			} else { // if no file specified - just load pattern, ./game.js checks whether current image has proper dimensions
-				gameScr.loadLegend(legend);
+			try {
+				if (legend.filePath) { // if file path is specified in `.wzp` load image from it (and don't encode it twice)
+					loadFile([legend.filePath], true, gameScr.loadLegend, legend);
+				} else { // if no file specified - just load pattern, ./game.js checks whether current image has proper dimensions
+					gameScr.loadLegend(legend);
+				}
+			} catch (e) {
+				dialog.showErrorBox("Something went wrong", e);
 			}
 		});
 		// abort further loading of file so not to load background twice
@@ -203,14 +209,18 @@ function loadFile([bg], URIencoded = false, callback, cbarg){
 		imgHolder.style.width = elWidth + "px";
 		imgHolder.style.height = elHeight + "px";
 		gameScr.on(elWidth, elHeight, bg);
-		if(callback){
+		if (callback) {
 			setImmediate(() => {
-				callback(cbarg);
+				try {
+					callback(cbarg);
+				} catch (error) {
+					dialog.showErrorBox("Something went wrong", error);
+				}
 			});
 		}
 	};
 	img.src = "file://" + bg;
-	if(!URIencoded)
+	if (!URIencoded)
 		bg = fixedEncodeURI(bg);
 	imgHolder.style.backgroundImage = "url(file://" + bg + ")";
 }
@@ -219,21 +229,21 @@ function loadFile([bg], URIencoded = false, callback, cbarg){
  * Shows save dialog and saves `legend` to selected file with .wzp extension
  * @param {MouseEvent} e
  */
-function savePattern(e){
+function savePattern(e) {
 	/** @type {Legend} */
 	let legend = gameScr.legend();
-	if(e.target.id === "savePatternOnly"){
+	if (e.target.id === "savePatternOnly") {
 		delete legend.filePath;
 	}
 	legend = JSON.stringify(legend);
 	dialog.showSaveDialog({
 		title: "Zapisz wzór",
 		filters: [
-			{name: "Wzór", extensions: ["wzp"]}
+			{ name: "Wzór", extensions: ["wzp"] }
 		]
 	}, saveFile => {
 		fs.writeFile(saveFile, legend, "utf-8", err => {
-			if(err){
+			if (err) {
 				dialog.showErrorBox("Błąd zapisu", "Nie udało zapisać się wzoru. Komunkiat błędu:\n" + err);
 			} else {
 				alert("Wzór zapisany do pliku: " + saveFile, "Zapisano");
@@ -248,7 +258,7 @@ document.getElementById("savePatternOnly").addEventListener("click", savePattern
  * Prevent opening loading image if dropped outside `dropZone`
  * @param {DragEvent} e
  */
-function preventDrop(e){
+function preventDrop(e) {
 	e.stopPropagation();
 	e.preventDefault();
 	e.dataTransfer.dropEffect = "none";
@@ -263,7 +273,7 @@ document.body.addEventListener("drop", preventDrop);
  * Show the copy icon when dragging over. Shows dropzone
  * @param {DragEvent} e
  */
-function fileDragOver(e){
+function fileDragOver(e) {
 	e.stopPropagation();
 	e.preventDefault();
 	e.dataTransfer.dropEffect = "copy";
@@ -277,7 +287,7 @@ dropZone.addEventListener("dragover", fileDragOver);
  * Hides (`display: none`) dropzone
  * @param {DragEvent} e
  */
-function fileDragLeave(e){
+function fileDragLeave(e) {
 	e.stopPropagation();
 	e.preventDefault();
 	dropZone.style.display = "none";
@@ -289,23 +299,23 @@ dropZone.addEventListener("dragend", fileDragLeave);
  * Loads (first) dropped file
  * @param {DragEvent} e event fired on file drop
  */
-function dropHandler(e){
+function dropHandler(e) {
 	e.stopPropagation();
 	e.preventDefault();
 	var files = e.dataTransfer.files; // Array of all files
 	let anyFile = false;
-	for(let a = 0; a < files.length; a++){
-		if(supportedFileTypes.includes(path.extname(files[a].path).toLowerCase())){
-			if(files.length > 1)
+	for (let a = 0; a < files.length; a++) {
+		if (supportedFileTypes.includes(path.extname(files[a].path).toLowerCase())) {
+			if (files.length > 1)
 				alert("Wybrano wiele plików. Załadowany zostanie pierwszy z nich", "Uwaga!");
 			files = files[a];
 			anyFile = true;
 			break;
 		}
 	}
-	if(!anyFile)
+	if (!anyFile)
 		files = [];
-	if(files.length == 0){
+	if (files.length == 0) {
 		alert("Upewnij się, że plik ma rozszerzenie .jpg, .jpeg, .png, .bmp lub .wzp", "Nie można otworzyć pliku");
 	} else {
 		loadFile([files.path]);
@@ -318,37 +328,37 @@ dropZone.addEventListener("drop", dropHandler);
  * Change tab to one pointed by event
  * @param {MouseEvent} event received event
  */
-function changeTab(event){
+function changeTab(event) {
 	var translObj = {
 		"menu-creator": "creator-container",
 		"menu-play": "play-container",
 		"menu-about": "about-contaier"
 	};
-	if(event.target.id == "menu-play") gameScr.startGame();
+	if (event.target.id == "menu-play") gameScr.startGame();
 	var containers = document.getElementsByClassName("container");
-	if (!event.target.classList.contains("menu-active")){
-		for(let a = 0; a < document.getElementById("top-menu").childElementCount; a++){
-			if(document.getElementById("top-menu").children[a] != event.target){
+	if (!event.target.classList.contains("menu-active")) {
+		for (let a = 0; a < document.getElementById("top-menu").childElementCount; a++) {
+			if (document.getElementById("top-menu").children[a] != event.target) {
 				document.getElementById("top-menu").children[a].classList.remove("menu-active");
 			}
 		}
 		event.target.classList.add("menu-active");
-		for(let a = 0; a < containers.length; a++){
-			if(containers[a].id != translObj[event.target.id]){
+		for (let a = 0; a < containers.length; a++) {
+			if (containers[a].id != translObj[event.target.id]) {
 				containers[a].classList.add("hidden");
 			}
 		}
 		document.getElementById(translObj[event.target.id]).classList.remove("hidden");
 	}
 }
-for(let a = 0; a < document.getElementById("top-menu").childElementCount; a++){
+for (let a = 0; a < document.getElementById("top-menu").childElementCount; a++) {
 	document.getElementById("top-menu").children[a].addEventListener("click", changeTab);
 }
 
 /**
  * Display app version in "about" tab in `#appVer` span
  */
-function showVersion(){
+function showVersion() {
 	var appVersion = app.getVersion();
 	document.getElementById("appVer").appendChild(document.createTextNode(appVersion));
 }

@@ -1,7 +1,7 @@
-const {app, BrowserWindow} = require("electron");
+const { app, BrowserWindow } = require("electron");
 const path = require("path");
 const url = require("url");
-const {autoUpdater} = require("electron-updater");
+const { autoUpdater } = require("electron-updater");
 
 // AppUserModelId has to be set to appId (from build in package.json) in order to
 // display notifications on Windows 10 and 8/8.1 used eg. by autoUpdater.
@@ -21,17 +21,17 @@ app.on("open-file", firstOpenListener);
  */
 let win;
 
-function createWindow () {
+function createWindow() {
 	// Window icon should be .ico on windows and .png on other systems
 	let icon;
-	if (process.platform === "win32"){
+	if (process.platform === "win32") {
 		icon = path.join(__dirname, "build", "icon.ico");
 	} else {
 		icon = path.join(__dirname, "build", "icon.png");
 	}
 
 	// Create the browser window. (hidden)
-	win = new BrowserWindow({width: 800, height: 600, frame: false, icon: icon, show: false});
+	win = new BrowserWindow({ width: 800, height: 600, frame: false, icon: icon, show: false, webPreferences: { nodeIntegration: true } });
 
 	// and load the index.html of the app.
 	win.loadURL(url.format({
@@ -73,9 +73,9 @@ function createWindow () {
  * @param {Electron.Event} e "open-file" event
  * @param {string} p path to file
  */
-function windowClosedOpenFile(e, p){
+function windowClosedOpenFile(e, p) {
 	e.preventDefault();
-	if(process.argv[1] === "." || process.argv[1] === "./" || process.argv[1] === ".\\"){ // if run from CLI (`electron .` or `electron ./`)
+	if (process.argv[1] === "." || process.argv[1] === "./" || process.argv[1] === ".\\") { // if run from CLI (`electron .` or `electron ./`)
 		process.argv.splice(2);
 		process.argv[2] = p;
 	} else {

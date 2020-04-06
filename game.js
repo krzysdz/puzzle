@@ -25,7 +25,7 @@ var gameReady = 0;
  * @param {number} [height=200] height of svg area
  * @returns {SVGSVGElement} `svg` HTML element
  */
-function createSVGArea(width = 500, height = 200){
+function createSVGArea(width = 500, height = 200) {
 	let svgElem = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 	svgElem.setAttribute("viewBox", "0 0 " + width + " " + height);
 	svgElem.setAttribute("width", width + "px");
@@ -37,11 +37,11 @@ function createSVGArea(width = 500, height = 200){
  * Add SVG element passed as param to `playImage` and `createImage` divs (also clears them before inserting)
  * @param {SVGSVGElement} svgElem SVG element to be added in both pictures
  */
-function addSVGArea(svgElem){
-	while(playImage.firstChild){
+function addSVGArea(svgElem) {
+	while (playImage.firstChild) {
 		playImage.removeChild(playImage.firstChild);
 	}
-	while(createImage.firstChild){
+	while (createImage.firstChild) {
 		createImage.removeChild(createImage.firstChild);
 	}
 	createImage.appendChild(svgElem);
@@ -52,11 +52,11 @@ function addSVGArea(svgElem){
  * @param {SVGSVGElement} elem SVG element which dimensions will be calculated
  * @returns {number[]} calculated `[width, height]`
  */
-function getDimensions(elem){
+function getDimensions(elem) {
 	let width, height;
-	if(elem.hasAttribute("viewBox")){
+	if (elem.hasAttribute("viewBox")) {
 		let dim = elem.getAttribute("viewBox").split(" ");
-		if(dim.length == 4){
+		if (dim.length == 4) {
 			width = dim[2];
 			height = dim[3];
 		} else {
@@ -75,14 +75,14 @@ function getDimensions(elem){
  * @param {number} [height] if ommited will be read from viewBox attribute of `svgElem`
  * @returns `svgElem` with added squares
  */
-function appendEmptySquares(svgElem, width, height){
-	if(!(width && height)){ // if height OR/AND width were not defined
+function appendEmptySquares(svgElem, width, height) {
+	if (!(width && height)) { // if height OR/AND width were not defined
 		let dim = getDimensions(svgElem);
 		width = dim[0];
 		height = dim[1];
 	}
-	for(let x = 0; x < width; x += dimensions){
-		for(let y = 0; y < height; y += dimensions){
+	for (let x = 0; x < width; x += dimensions) {
+		for (let y = 0; y < height; y += dimensions) {
 			let newRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
 			newRect.setAttribute("x", x);
 			newRect.setAttribute("y", y);
@@ -96,27 +96,27 @@ function appendEmptySquares(svgElem, width, height){
 	return svgElem;
 }
 
-function resetColour(){
+function resetColour() {
 	let filledSquares = createImage.getElementsByClassName("b");
-	while(filledSquares.length > 0){
+	while (filledSquares.length > 0) {
 		filledSquares[0].setAttribute("fill", "transparent");
 		filledSquares[0].classList.add("a");
 		filledSquares[0].classList.remove("b");
-		while(filledSquares[0] && filledSquares[0].firstChild){ //remove title elements when clearing
+		while (filledSquares[0] && filledSquares[0].firstChild) { //remove title elements when clearing
 			filledSquares[0].removeChild(filledSquares[0].firstChild);
 		}
 	}
 	let markedSquares = createImage.querySelectorAll("rect[fill=\"purple\"]");
-	for(let a = 0; a < markedSquares.length; a++){
+	for (let a = 0; a < markedSquares.length; a++) {
 		markedSquares[a].classList.add("a");
 		markedSquares[a].classList.remove("b");
 		markedSquares[a].setAttribute("fill", "transparent");
-		while(markedSquares[a].firstChild){ //remove title elements when clearing
+		while (markedSquares[a].firstChild) { //remove title elements when clearing
 			markedSquares[a].removeChild(markedSquares[a].firstChild);
 		}
 	}
 	let numbers = createImage.querySelectorAll("text");
-	for(let a = 0; a < numbers.length; a++){
+	for (let a = 0; a < numbers.length; a++) {
 		numbers[a].remove();
 	}
 	legendObj = {
@@ -126,30 +126,30 @@ function resetColour(){
 		dimensions: []
 	};
 	let list = document.getElementById("legend");
-	while(list.firstChild){
+	while (list.firstChild) {
 		list.removeChild(list.firstChild);
 	}
 	preparePattern();
 }
 
-function fillPattern(){
+function fillPattern() {
 	let borders = findBorders(patternArea.firstChild);
 	let width = borders[1] - borders[3];
 	let height = borders[2] - borders[0];
 	let dim = getDimensions(createImage.firstChild);
 	let [imgWidth, imgHeight] = dim;
-	for(let x = 0; x < imgWidth; x += width + dimensions){
-		for(let y = 0; y < imgHeight; y += height + dimensions){
+	for (let x = 0; x < imgWidth; x += width + dimensions) {
+		for (let y = 0; y < imgHeight; y += height + dimensions) {
 			fillSelected([y, ((x + width) <= imgWidth) ? (x + width) : imgWidth, ((y + height) <= imgHeight) ? (y + height) : imgHeight, x]);
 		}
 	}
 }
 
-function getContrastYIQ(hexcolor){
-	var r = parseInt(hexcolor.substr(1,2),16);
-	var g = parseInt(hexcolor.substr(3,2),16);
-	var b = parseInt(hexcolor.substr(5,2),16);
-	var yiq = ((r*299)+(g*587)+(b*114))/1000;
+function getContrastYIQ(hexcolor) {
+	var r = parseInt(hexcolor.substr(1, 2), 16);
+	var g = parseInt(hexcolor.substr(3, 2), 16);
+	var b = parseInt(hexcolor.substr(5, 2), 16);
+	var yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
 	return (yiq >= 128) ? "black" : "white";
 }
 
@@ -157,21 +157,21 @@ function getContrastYIQ(hexcolor){
  * Creates random 6 character long HEX colour value preceeded by `#`
  * @returns {string}  random HEX coulour eg. `#53F76A`
  */
-function createColor(){
+function createColor() {
 	var rand = Math.random();
-	while(rand < 0.1){
+	while (rand < 0.1) {
 		rand = Math.random();
 	}
-	return "#" + (rand*0xFFFFFF<<0).toString(16);
+	return "#" + (rand * 0xFFFFFF << 0).toString(16);
 }
 
 /**
  * Draws purple squares when user hovers them with mouse
  * @param {MouseEvent} event Event passed by "mouseover"
  */
-function draw(event){
+function draw(event) {
 	var status = event.target.parentNode.parentNode.getAttribute("data-click-status");
-	if(status == "1" && event.target.classList.contains("a"))
+	if (status == "1" && event.target.classList.contains("a"))
 		event.target.setAttribute("fill", "purple");
 }
 
@@ -180,25 +180,25 @@ function draw(event){
  * @param {HTMLElement} elem element containing purple squares
  * @returns {string[]} `["top", "right", "bottom", "left"]`
  */
-function findBorders(elem){
+function findBorders(elem) {
 	var borders = []; // ["top", "right", "bottom", "left"]
 	var purpleSquares = elem.querySelectorAll("rect[fill=\"purple\"]");
-	if(purpleSquares && purpleSquares.length > 0){
+	if (purpleSquares && purpleSquares.length > 0) {
 		borders[0] = parseInt(purpleSquares[0].getAttribute("y"));
 		borders[1] = parseInt(purpleSquares[0].getAttribute("x"));
 		borders[2] = parseInt(purpleSquares[0].getAttribute("y"));
 		borders[3] = parseInt(purpleSquares[0].getAttribute("x"));
-		for(let a = 1; a < purpleSquares.length; a++){
-			if(parseInt(purpleSquares[a].getAttribute("y")) < borders[0]) borders[0] = parseInt(purpleSquares[a].getAttribute("y"));
-			if(parseInt(purpleSquares[a].getAttribute("x")) > borders[1]) borders[1] = parseInt(purpleSquares[a].getAttribute("x"));
-			if(parseInt(purpleSquares[a].getAttribute("y")) > borders[2]) borders[2] = parseInt(purpleSquares[a].getAttribute("y"));
-			if(parseInt(purpleSquares[a].getAttribute("x")) < borders[3]) borders[3] = parseInt(purpleSquares[a].getAttribute("x"));
+		for (let a = 1; a < purpleSquares.length; a++) {
+			if (parseInt(purpleSquares[a].getAttribute("y")) < borders[0]) borders[0] = parseInt(purpleSquares[a].getAttribute("y"));
+			if (parseInt(purpleSquares[a].getAttribute("x")) > borders[1]) borders[1] = parseInt(purpleSquares[a].getAttribute("x"));
+			if (parseInt(purpleSquares[a].getAttribute("y")) > borders[2]) borders[2] = parseInt(purpleSquares[a].getAttribute("y"));
+			if (parseInt(purpleSquares[a].getAttribute("x")) < borders[3]) borders[3] = parseInt(purpleSquares[a].getAttribute("x"));
 		}
 	}
 	return borders;
 }
 
-function imageEvent(){
+function imageEvent() {
 	var borders = findBorders(createImage);
 	fillSelected(borders);
 }
@@ -208,12 +208,12 @@ function imageEvent(){
  * @param {SVGTextElement} textElement Text element (with set font and size) which dimensions will be calculated
  * @returns {number[]} `[width, height]`
  */
-function svgTextDimensions(textElement){
+function svgTextDimensions(textElement) {
 	let bbox = textElement.getBBox();
 	return [bbox.width, bbox.height];
 }
 
-function addElementNumber([top, right, bottom, left], num, color){
+function addElementNumber([top, right, bottom, left], num, color) {
 	let textElem = document.createElementNS("http://www.w3.org/2000/svg", "text");
 	textElem.setAttribute("fill", getContrastYIQ(color));
 	textElem.setAttribute("font-size", "30");
@@ -232,10 +232,10 @@ function addElementNumber([top, right, bottom, left], num, color){
  * @param {string} [colour] HEX colour of rectangle which will be created (random, unless specified)
  * @param {number} [elId] rectangle's ID (number). Unless specified, it will be `legendObj.lastNum`.
  */
-function fillSelected(borders, colour, elId){
-	if(!colour)
+function fillSelected(borders, colour, elId) {
+	if (!colour)
 		colour = createColor();
-	if(!elId)
+	if (!elId)
 		elId = legendObj.lastNum;
 	legendObj.elements[elId] = {
 		id: elId,
@@ -243,13 +243,13 @@ function fillSelected(borders, colour, elId){
 		borders: borders
 	};
 	let modified = 0;
-	for(let a = borders[3]; a <= borders[1]; a+=dimensions){
-		for(let b = borders[0]; b <= borders[2]; b+=dimensions){
+	for (let a = borders[3]; a <= borders[1]; a += dimensions) {
+		for (let b = borders[0]; b <= borders[2]; b += dimensions) {
 			/** @type {SVGRectElement} */
 			let oneSquare = createImage.querySelector("rect[x=\"" + a + "\"][y=\"" + b + "\"");
 			let title = document.createElementNS("http://www.w3.org/2000/svg", "title");
 			title.appendChild(document.createTextNode(elId));
-			if(oneSquare && oneSquare.classList.contains("a")){
+			if (oneSquare && oneSquare.classList.contains("a")) {
 				oneSquare.setAttribute("fill", colour);
 				oneSquare.setAttribute("title", elId);
 				oneSquare.classList.remove("a");
@@ -259,15 +259,15 @@ function fillSelected(borders, colour, elId){
 			}
 		}
 	}
-	if(modified){
+	if (modified) {
 		addElementNumber(borders, elId, colour);
 		legendObj.lastNum++;
 		gameReady = 1;
 	}
 }
 
-function preparePattern(){
-	while(patternArea.firstChild){
+function preparePattern() {
+	while (patternArea.firstChild) {
 		patternArea.removeChild(patternArea.firstChild);
 	}
 	let patternSVG = appendEmptySquares(createSVGArea(300, 160), 300, 160);
@@ -277,13 +277,13 @@ function preparePattern(){
 	patternArea.setAttribute("data-click-status", "0");
 }
 
-function createList(){
+function createList() {
 	let list = document.getElementById("legend");
-	while(list.firstChild){
+	while (list.firstChild) {
 		list.removeChild(list.firstChild);
 	}
-	let {elements} = legendObj;
-	for(let a = 0; a < elements.length; a++){
+	let { elements } = legendObj;
+	for (let a = 0; a < elements.length; a++) {
 		let elId = elements[a].id;
 		let listElem = document.createElement("li");
 		let colour = elements[a].color;
@@ -297,10 +297,10 @@ function createList(){
 	}
 }
 
-function prepareGame(){
-	if(!gameReady) return true;
+function prepareGame() {
+	if (!gameReady) return true;
 	playImage.setAttribute("style", createImage.getAttribute("style"));
-	while(playImage.firstChild){
+	while (playImage.firstChild) {
 		playImage.removeChild(playImage.firstChild);
 	}
 	let svgElem = createImage.firstChild;
@@ -313,26 +313,26 @@ function prepareGame(){
  * Removes element, it's number and it's legend entry after double click
  * @param {MouseEvent} event Double click mouse event
  */
-function removeElem(event){
+function removeElem(event) {
 	var elem = event.target;
 	let title;
-	if(elem instanceof HTMLLIElement || elem instanceof SVGTextElement)
+	if (elem instanceof HTMLLIElement || elem instanceof SVGTextElement)
 		title = elem.getAttribute("name");
-	else if(elem instanceof SVGRectElement)
+	else if (elem instanceof SVGRectElement)
 		title = elem.getAttribute("title");
-	else if(elem instanceof HTMLSpanElement)
+	else if (elem instanceof HTMLSpanElement)
 		title = elem.parentElement.getAttribute("name");
-	else if(elem instanceof SVGSVGElement)
+	else if (elem instanceof SVGSVGElement)
 		return false; //clicked on already removed square - just return
 	else
 		throw new Error("Unknown element clicked: " + event + "\n" + event.target);
 	let elements = playImage.querySelectorAll("rect[title=\"" + title + "\"]");
-	for(let a = 0; a < elements.length; a++){
+	for (let a = 0; a < elements.length; a++) {
 		elements[a].remove();
 	}
 	let otherElems = document.getElementsByName(title);
-	for(let a = otherElems.length - 1; a >= 0; a--){
-		if(otherElems[a].parentElement.parentElement != createImage)
+	for (let a = otherElems.length - 1; a >= 0; a--) {
+		if (otherElems[a].parentElement.parentElement != createImage)
 			otherElems[a].remove();
 	}
 }
@@ -343,10 +343,10 @@ function removeElem(event){
  * @param {number} height height of image
  * @param {string} path path to loaded file
  */
-function reset(width, height, path){
+function reset(width, height, path) {
 	addSVGArea(appendEmptySquares(createSVGArea(width, height), width, height));
 	let list = document.getElementById("legend");
-	while(list.firstChild){
+	while (list.firstChild) {
 		list.removeChild(list.firstChild);
 	}
 	legendObj = {
@@ -361,16 +361,17 @@ function reset(width, height, path){
  * Fills the image with pasttern read form `legend` object
  * @param {Legend} legend `Legend` object read form `.wzp` file
  */
-function fillFromFile(legend){
-	if(createImage.style.backgroundImage == ""){
+function fillFromFile(legend) {
+	// Don't throw errors because Electron crashes :(
+	if (createImage.style.backgroundImage == "") {
 		alert("Ten plik wzoru nie zawiera obrazu i żaden obraz nie jest załadowany. Proszę załadować obraz.", "Błąd");
-		throw new Error("Loading pattern without any image!");
+		// throw new Error("Loading pattern without any image!");
 	}
-	if(getDimensions(createImage.firstChild)[0] != legend.dimensions[0] || getDimensions(createImage.firstChild)[1] != legend.dimensions[1]){
+	if (getDimensions(createImage.firstChild)[0] != legend.dimensions[0] || getDimensions(createImage.firstChild)[1] != legend.dimensions[1]) {
 		alert("Wymiary obrazka i wzoru są niezgodne", "Błąd!");
-		throw new Error("Dimensions of SVG element inside `createImage` are different than specified in `.wzp` file");
+		// throw new Error("Dimensions of SVG element inside `createImage` are different than specified in `.wzp` file");
 	}
-	for(let n = 0; n < legend.elements.length; n++){
+	for (let n = 0; n < legend.elements.length; n++) {
 		fillSelected(legend.elements[n].borders, legend.elements[n].color, legend.elements[n].id);
 	}
 }
@@ -378,22 +379,22 @@ function fillFromFile(legend){
 /**
  * Adds all necessary event listeners to document
  */
-function launch(){
+function launch() {
 	dimensions = 20;
 	playImage = document.getElementById("playImage");
 	patternArea = document.getElementById("pattern");
 	createImage = document.getElementById("image");
-	patternArea.addEventListener("mousedown", function(){
+	patternArea.addEventListener("mousedown", function () {
 		this.setAttribute("data-click-status", "1");
 	});
-	patternArea.addEventListener("mouseup", function(){
+	patternArea.addEventListener("mouseup", function () {
 		this.setAttribute("data-click-status", "0");
 	});
 	patternArea.addEventListener("mouseover", draw);
-	createImage.addEventListener("mousedown", function(){
+	createImage.addEventListener("mousedown", function () {
 		this.setAttribute("data-click-status", "1");
 	});
-	createImage.addEventListener("mouseup", function(){
+	createImage.addEventListener("mouseup", function () {
 		this.setAttribute("data-click-status", "0");
 		imageEvent();
 	});
@@ -406,7 +407,7 @@ function launch(){
 	document.getElementById("legend").addEventListener("dblclick", removeElem);
 }
 
-function exportLegend(){
+function exportLegend() {
 	//return JSON.stringify(legendObj);
 	return legendObj;
 }
