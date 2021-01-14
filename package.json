@@ -112,6 +112,6 @@
     "eslint": "^6.8.0"
   },
   "dependencies": {
-    "electron-updater": "^4.2.5"
+    "electron-updater": "^4.3.1"
   }
 }
